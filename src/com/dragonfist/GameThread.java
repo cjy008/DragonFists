@@ -1,4 +1,5 @@
-package com.example.dragonfist;
+package com.dragonfist;
+
 import android.graphics.Canvas;
 
 public class GameThread extends Thread {

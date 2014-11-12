@@ -1,4 +1,4 @@
-package com.example.dragonfist;
+package com.dragonfist;
 
 public class Enemy {
 	public float x,y, radius;

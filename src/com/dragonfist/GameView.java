@@ -1,4 +1,4 @@
-package com.example.dragonfist;
+package com.dragonfist;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

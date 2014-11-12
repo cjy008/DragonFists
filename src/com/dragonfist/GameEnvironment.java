@@ -1,4 +1,5 @@
-package com.example.dragonfist;
+package com.dragonfist;
+
 
 public class GameEnvironment {
 	

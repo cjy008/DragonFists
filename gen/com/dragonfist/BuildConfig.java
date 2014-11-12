@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.example.dragonfist;
+package com.dragonfist;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;
