@@ -1,0 +1,68 @@
+import java.util.*;
+
+public class physicsObjects {
+	private float acceleration;
+	private float velocity;
+	private float positionX;
+	private float positionY;
+	
+	final int bufferspace = 20;
+	final int screensize = 100;
+	
+	Random randomGenerator = new Random();
+	
+	public physicsObjects(){
+		acceleration = 0;
+		velocity = 0;
+		positionX = 0;
+		positionY = 0;
+		
+		initialPosition();
+		initialPosition();
+		initialPosition();
+		initialPosition();
+	}
+	
+	// We're creating a 20 pixel border around the screen of size 100
+	public void initialPosition(){
+
+		int edge = randomGenerator.nextInt(3);
+		
+		// On the left edge of the screen
+		if(edge == 0){
+			positionX = -bufferspace;
+			// 20 + screensize + 20 
+			int edgeLeft = screensize + bufferspace + 1;
+			positionY = randomGenerator.nextInt(edgeLeft) - bufferspace;
+			
+		}
+		// On the top edge of the screen
+		if(edge == 1){
+			positionY = -bufferspace;
+			int edgeTop = screensize + (bufferspace * 2) + 1;
+			positionX = randomGenerator.nextInt(edgeTop) - bufferspace;
+		}
+		// On the right edge of the screen
+		if(edge == 2){
+			positionX = screensize + bufferspace;
+			int edgeRight = screensize + bufferspace + 1;
+			positionY = randomGenerator.nextInt(edgeRight) - bufferspace;
+		}
+		//Testing purposes
+		System.out.println("X = " + positionX + " Y = " + positionY);
+	}
+
+	// Method that determines the velocity of the object
+	public void objectVelocity(){
+		if(positionX < 50){
+			velocity = randomGenerator.nextInt(6);
+		}
+		if(positionX > 50){
+		}
+	}
+	
+	public static void main(String[] args){
+		physicsObjects test = new physicsObjects();
+	}
+
+}
