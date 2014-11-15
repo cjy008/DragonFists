@@ -20,6 +20,22 @@ public class Sprite {
        public int getHeight() {
            return bmp.getHeight();
        }
+       
+       public int getX() {
+           return bmp.getWidth();
+       }
+       
+       public int getY() {
+           return bmp.getHeight();
+       }
+       
+       public void setX(int x) {
+           this.x = x;
+       }
+       
+       public void setY(int y) {
+    	   this.y = y;
+       }
       
        public void Draw(Canvas canvas) {
              canvas.drawBitmap(bmp, x , 10, null);
