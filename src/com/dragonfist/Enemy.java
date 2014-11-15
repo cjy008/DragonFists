@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 
 public class Enemy {
 	public float x,y, radius;
@@ -25,10 +26,10 @@ public class Enemy {
 	/**
 	 * 
 	 * @param gameView that creates the object
-	 * @param x position that the Enemy object is initialized at
-	 * @param y position that the Enemy object is initialized at
-	 * @param velx - the initial x direction velocity of the Enemy object
-	 * @param vely - the initial y direction velocity of the Enemy object
+	 * @param x the position that the Enemy object is initialized at
+	 * @param y the position that the Enemy object is initialized at
+	 * @param velx the initial x direction velocity of the Enemy object
+	 * @param vely the initial y direction velocity of the Enemy object
 	 */
 	public Enemy (GameView gameView, float x,float y,double velx,double vely)
 	{
@@ -51,7 +52,13 @@ public class Enemy {
 		velx = velx+(accx*passedTime);
 		vely = vely+(accy*passedTime);
 		y= (float) (y+(vely*passedTime));
+		
+		body.setX((int)x);
+		body.setY((int)y);
 	}
+	
+	public void Draw(Canvas canvas)
+	{ body.Draw(canvas); }
 	
 	/**
 	 * @return Sprite object needed for call to draw method

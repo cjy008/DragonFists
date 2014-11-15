@@ -16,14 +16,6 @@ import android.view.SurfaceView;
 
 public class GameView extends SurfaceView 
 {
-	//BMP
-	private Bitmap playerStandingBmp; //Player Sprite Image
-	private Bitmap playerRightStrikeBmp; // angle of attack from 45 to -45 degrees NoE
-	private Bitmap playerLeftStrikeBmp; // angle of attack from 135 to 45 degrees NoE
-	private Bitmap playerFrontStrikeBmp; // angle of attack from 225 to 135 degrees NoE
-	private Bitmap playerBackStrikeBmp; // angle of attack from 225 to 315 (-45) degrees NoE
-	
-	private Bitmap enemyBmp[]; //Enemy Sprite Image (Have several to chose from)
 	
 	//Android syntax variables
     private SurfaceHolder holder;
@@ -37,14 +29,14 @@ public class GameView extends SurfaceView
     
     //Sprites
     private Enemy enemies[];
-    private Sprite player;
+    private Player player;
     private int numEnemies;
 
     public GameView(Context context) {
     	super(context);
     	
     	//Load Bitmap Images
-    	playerStandingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruce);
+    	
     	/* TODO add drawable resources to account for the different directional strikes
     	playerRightStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceRightStrike);
     	playerLeftStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceLeftStrike);
@@ -60,16 +52,15 @@ public class GameView extends SurfaceView
         //Load Game Logic Variables
         numEnemies = 10;
         
-        
-        player = new Sprite(playerStandingBmp);
-    	player.setX(getWidth()/2 - player.getHeight()/2);
-    	player.setY((int)(getHeight()*3.0/4 - player.getHeight()/2.0));
+        player = new Player(this);
+        //player = new Sprite(playerStandingBmp);
+    	//player.setX(getWidth()/2 - player.getHeight()/2);
+    	//player.setY((int)(getHeight()*3.0/4 - player.getHeight()/2.0));
     	
         enemies = new Enemy[numEnemies];
         
         for(int i=0;i<numEnemies;i++)
         {
-        	
         	enemies[i] = new Enemy(this, (float)i*getWidth()/10, (float)i*getHeight()/10, 1.0, 1.0);
         }
         x = 0; 
@@ -112,29 +103,33 @@ public class GameView extends SurfaceView
         
     }
 
-    protected void Draw(Canvas canvas) {
-	     if (x == getWidth() - playerStandingBmp.getWidth()) {
-	            xSpeed = -1;
-	     }
-	     if (x == 0) {
-	            xSpeed = 1;
-	     }
-	     x = x + xSpeed;
-	     canvas.drawColor(Color.BLACK);
-	     canvas.drawBitmap(playerStandingBmp, x , 10, null);
-	     for (int i=0; i<numEnemies;i++)
-	     {
-	    	 Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
-	    	 Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
-	    	 canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
-	     }
-	     if(draggable)
-	     {
-	    	 Paint paint = new Paint();
-	    	 paint.setColor(Color.WHITE);
-	    	 //canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
-	    	 canvas.drawLine(startX,startY,currentX,currentY, paint);
-	     }
+    protected void Draw(Canvas canvas) 
+    {
+    	/*
+		 if (x == getWidth() - playerStandingBmp.getWidth()) {
+		        xSpeed = -1;
+		 }
+		 if (x == 0) {
+		        xSpeed = 1;
+		 }
+		 x = x + xSpeed;
+		 canvas.drawColor(Color.BLACK);
+		 canvas.drawBitmap(playerStandingBmp, x , 10, null);
+		 */
+		 for (int i=0; i<numEnemies;i++)
+		 {
+			 Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
+			 Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
+			 enemies[i].Draw(canvas);
+			 //canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
+		 }
+		 if(draggable)
+		 {
+			 Paint paint = new Paint();
+			 paint.setColor(Color.WHITE);
+			 //canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
+			 canvas.drawLine(startX,startY,currentX,currentY, paint);
+		 }
     }
     
 
@@ -187,8 +182,8 @@ public class GameView extends SurfaceView
     
     /**
      * Description: Round the inital player snap to the center of the closest enemy
-     * @param x is the horizontal coordinate of the initial tap point
-     * @param y is the vertical coordinate of the initial tap point
+     * @param x the horizontal coordinate of the initial tap point
+     * @param y the vertical coordinate of the initial tap point
      */
     private void Snap(float x,float y)
     {
