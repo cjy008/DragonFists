@@ -1,5 +1,7 @@
 package com.dragonfist;
 
+import java.util.Random;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,32 +14,64 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class GameView extends SurfaceView {
-	private Bitmap bmp;
+public class GameView extends SurfaceView 
+{
+	//BMP
+	private Bitmap playerStandingBmp; //Player Sprite Image
+	private Bitmap playerRightStrikeBmp; // angle of attack from 45 to -45 degrees NoE
+	private Bitmap playerLeftStrikeBmp; // angle of attack from 135 to 45 degrees NoE
+	private Bitmap playerFrontStrikeBmp; // angle of attack from 225 to 135 degrees NoE
+	private Bitmap playerBackStrikeBmp; // angle of attack from 225 to 315 (-45) degrees NoE
+	
+	private Bitmap enemyBmp[]; //Enemy Sprite Image (Have several to chose from)
+	
+	//Android syntax variables
     private SurfaceHolder holder;
     private GameThread GT;
-    private int x = 0; 
-    private int xSpeed = 1;
+    
+    //Logic Variables
+    private int x;
+    private int xSpeed;
     private float startX, startY, currentX, currentY;
     private boolean draggable;
-    private Sprite enemies[];
+    
+    //Sprites
+    private Enemy enemies[];
+    private Sprite player;
     private int numEnemies;
 
     public GameView(Context context) {
     	super(context);
+    	
+    	//Load Bitmap Images
+    	playerStandingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruce);
+    	/* TODO add drawable resources to account for the different directional strikes
+    	playerRightStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceRightStrike);
+    	playerLeftStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceLeftStrike);
+    	playerFrontStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceFrontStrike);
+    	playerBackStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceBackStrike);
+    	*/
+    	
+    	
+    	//Load Android Syntax Variables
         GT = new GameThread(this);
         holder = getHolder();
-        bmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruce);
+        
+        //Load Game Logic Variables
         numEnemies = 10;
-        enemies = new Sprite[numEnemies];
-
+        
+        
+        player = new Sprite(playerStandingBmp);
+    	player.setX(getWidth()/2 - player.getHeight()/2);
+    	player.setY((int)(getHeight()*3.0/4 - player.getHeight()/2.0));
+    	
+        enemies = new Enemy[numEnemies];
+        
         for(int i=0;i<numEnemies;i++)
         {
-        	enemies[i] = new Sprite(bmp);
-        	enemies[i].setX(i*20);
-        	enemies[i].setY(i*20);       	
+        	
+        	enemies[i] = new Enemy(this, (float)i*getWidth()/10, (float)i*getHeight()/10, 1.0, 1.0);
         }
-        
         x = 0; 
         xSpeed = 1;
         startX = 0;
@@ -48,34 +82,38 @@ public class GameView extends SurfaceView {
         holder.addCallback(new SurfaceHolder.Callback() {
 
                @Override
-               public void surfaceDestroyed(SurfaceHolder holder) {
-                      boolean retry = true;
-                      GT.setRunning(false);
-                      while (retry) {
-                             try {
-                            	 GT.join();
-                            	 retry = false;
-                             } catch (InterruptedException e) {
-                             }
-                      }
+               public void surfaceDestroyed(SurfaceHolder holder) 
+               {
+                  boolean retry = true;
+                  GT.setRunning(false);
+                  while (retry) 
+                  {
+                     try 
+                     {
+                    	 GT.join();
+                    	 retry = false;
+                     } 
+                     catch (InterruptedException e) 
+                     { e.printStackTrace(); }
+                  }
                }
 
                @Override
-               public void surfaceCreated(SurfaceHolder holder) {
+               public void surfaceCreated(SurfaceHolder holder) 
+               {
             	   GT.setRunning(true);
             	   GT.start();
                }
 
                @Override
                public void surfaceChanged(SurfaceHolder holder, int format,
-                             int width, int height) {
-               }
+                             int width, int height) {}
         });
         
     }
 
     protected void Draw(Canvas canvas) {
-	     if (x == getWidth() - bmp.getWidth()) {
+	     if (x == getWidth() - playerStandingBmp.getWidth()) {
 	            xSpeed = -1;
 	     }
 	     if (x == 0) {
@@ -83,12 +121,12 @@ public class GameView extends SurfaceView {
 	     }
 	     x = x + xSpeed;
 	     canvas.drawColor(Color.BLACK);
-	     canvas.drawBitmap(bmp, x , 10, null);
+	     canvas.drawBitmap(playerStandingBmp, x , 10, null);
 	     for (int i=0; i<numEnemies;i++)
 	     {
-	    	 Log.d("woohX",Integer.toString(enemies[i].getX()));
-	    	 Log.d("woohY",Integer.toString(enemies[i].getY()));
-	    	 canvas.drawBitmap(bmp, enemies[i].getX() , enemies[i].getY(), null);
+	    	 Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
+	    	 Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
+	    	 canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
 	     }
 	     if(draggable)
 	     {
@@ -99,6 +137,7 @@ public class GameView extends SurfaceView {
 	     }
     }
     
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) 
     {
@@ -146,6 +185,11 @@ public class GameView extends SurfaceView {
         return true;
     }
     
+    /**
+     * Description: Round the inital player snap to the center of the closest enemy
+     * @param x is the horizontal coordinate of the initial tap point
+     * @param y is the vertical coordinate of the initial tap point
+     */
     private void Snap(float x,float y)
     {
     	double smallestDist, currentDist;
@@ -154,19 +198,20 @@ public class GameView extends SurfaceView {
     	int width,height;
     	for (int i=0; i<numEnemies;i++)
     	{
-    		width = enemies[i].getWidth();
-    		height = enemies[i].getHeight();
-    		centerX = enemies[i].getX()+(width/2);
-    		centerY = enemies[i].getY()+(height/2);
+    		width = enemies[i].getBody().getWidth();
+    		height = enemies[i].getBody().getHeight();
+    		centerX = enemies[i].getBody().getX()+(width/2);
+    		centerY = enemies[i].getBody().getY()+(height/2);
     		if(Math.abs((x-centerX))<width/2)
     		{
     			if(Math.abs((y-centerY))<height/2)
     			{	
     				currentDist = Math.sqrt((Math.pow(x-centerX,2)+(Math.pow(y-centerY,2))));
-	    			if(currentDist<smallestDist){
+	    			if(currentDist<smallestDist)
+	    			{
 	    				smallestDist = currentDist;	
-	    				currentX = centerX;
-	    				currentY = centerY;
+	    				startX = centerX;
+	    				startY = centerY;
 	    			}
     			}
     		}
