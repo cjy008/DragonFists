@@ -23,6 +23,7 @@ public class GameView extends SurfaceView
     public static int screenWidth;
     public static int screenHeight;
     public static float testAspectRatio = (float)(1280.0/720.0);
+    public int bufferspace = 40;
     
     //Logic Variables
     private int x;
@@ -137,10 +138,13 @@ public class GameView extends SurfaceView
 		 
 		for (int i=0; i<numEnemies;i++)
 		{
-//			Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
-//			Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
-			enemies[i].Draw(canvas);
-			//canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
+			if(enemies[i].alive)
+			{
+	//			Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
+	//			Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
+				enemies[i].Draw(canvas);
+				//canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
+			}
 		}
 		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
 		if(lineDrawn)
@@ -227,28 +231,31 @@ public class GameView extends SurfaceView
     	int width,height;
     	for (int i=0; i<numEnemies;i++)
     	{
-    		width = enemies[i].getBody().getWidth();
-    		height = enemies[i].getBody().getHeight();
-    		centerX = enemies[i].getBody().getX()+(width/2);
-    		centerY = enemies[i].getBody().getY()+(height/2);
-//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
-//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
-//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
-//    		Log.d("brisketbeef2","height: "+String.format("%d", height));
-    		if(Math.abs((x-centerX))<width/2)
+    		if(enemies[i].alive)
     		{
-    			Log.d("brisket","I'm in da loop mah");
-    			if(Math.abs((y-centerY))<height/2)
-    			{	
-    				currentDist = Math.sqrt((Math.pow(x-centerX,2)+(Math.pow(y-centerY,2))));
-	    			if(currentDist<smallestDist)
-	    			{
-	    				change = true;
-	    				smallestDist = currentDist;	
-	    				startX = centerX;
-	    				startY = centerY;
+	    		width = enemies[i].getBody().getWidth();
+	    		height = enemies[i].getBody().getHeight();
+	    		centerX = enemies[i].getBody().getX()+(width/2);
+	    		centerY = enemies[i].getBody().getY()+(height/2);
+	//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
+	//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
+	//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
+	//    		Log.d("brisketbeef2","height: "+String.format("%d", height));
+	    		if(Math.abs((x-centerX))<width/2)
+	    		{
+	    			Log.d("brisket","I'm in da loop mah");
+	    			if(Math.abs((y-centerY))<height/2)
+	    			{	
+	    				currentDist = Math.sqrt((Math.pow(x-centerX,2)+(Math.pow(y-centerY,2))));
+		    			if(currentDist<smallestDist)
+		    			{
+		    				change = true;
+		    				smallestDist = currentDist;	
+		    				startX = centerX;
+		    				startY = centerY;
+		    			}
 	    			}
-    			}
+	    		}
     		}
     	}
     	return change;
@@ -259,7 +266,14 @@ public class GameView extends SurfaceView
 		timePassed = timePassed/1000;
 		for(int i=0;i<numEnemies;i++)
 		{
-			enemies[i].update(timePassed,i);
+			if(enemies[i].alive)
+			{
+				enemies[i].update(timePassed);
+				if (enemies[i].y > screenHeight+bufferspace || enemies[i].y < -bufferspace || enemies[i].x < -bufferspace || enemies[i].x > screenWidth + bufferspace){
+					enemies[i].alive = false;
+				}
+			}
+			
 		}
 	}
 	

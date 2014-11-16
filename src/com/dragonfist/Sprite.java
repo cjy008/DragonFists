@@ -60,4 +60,6 @@ public class Sprite {
        public void Draw(Canvas canvas) {
              canvas.drawBitmap(bmp, x , y, null);
        }
+       
+    
 }  
