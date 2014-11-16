@@ -1,0 +1,4 @@
+-Fix line jumping between boolean draggable turning on and off.
+	-Try: changing draggable to true ONLY when the player has moved finger
+-Fix onResume();
+-Change androidOrientation landscape permanently

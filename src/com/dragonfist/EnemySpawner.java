@@ -7,6 +7,7 @@ public class EnemySpawner {
 	private double velocityX;
 	private double velocityY =0;
 	private float positionX;
+	private GameView gameView;
 	private float positionY;
 	int edge;
 	
@@ -16,9 +17,8 @@ public class EnemySpawner {
 	
 	Random randomGenerator = new Random();
 	
-	public void EnemySpawner(){
-		
-
+	public void EnemySpawner(GameView gameView){
+		this.gameView = gameView;
 	}
 	
 	// We're creating a 20 pixel border around the screen of size 100
@@ -35,7 +35,7 @@ public class EnemySpawner {
 		setVelocity();
 		
 		//Testing purposes
-		return new Enemy(positionX, positionY, velocityX, velocityY);
+		return new Enemy(gameView, positionX, positionY, velocityX, velocityY);
 		//System.out.println("X = " + positionX + " Y = " + positionY);
 	}
 	

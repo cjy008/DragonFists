@@ -20,12 +20,13 @@ public class GameView extends SurfaceView
 	//Android syntax variables
     private SurfaceHolder holder;
     private GameThread GT;
+    private int screenHeight, screenWidth;
     
     //Logic Variables
     private int x;
     private int xSpeed;
     private float startX, startY, currentX, currentY;
-    private boolean draggable;
+    private boolean draggable, lineDrawn;
     
     //Sprites
     private Enemy enemies[];
@@ -54,14 +55,19 @@ public class GameView extends SurfaceView
         
         player = new Player(this);
         //player = new Sprite(playerStandingBmp);
-    	//player.setX(getWidth()/2 - player.getHeight()/2);
-    	//player.setY((int)(getHeight()*3.0/4 - player.getHeight()/2.0));
+    	//player.setX(screenWidth/2 - player.getHeight()/2);
+    	//player.setY((int)(screenHeight*3.0/4 - player.getHeight()/2.0));
     	
         enemies = new Enemy[numEnemies];
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
         
         for(int i=0;i<numEnemies;i++)
         {
-        	enemies[i] = new Enemy(this, (float)i*getWidth()/10, (float)i*getHeight()/10, 1.0, 1.0);
+        	enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	
+        	Log.d("Alpha Test", "enemies[i].x: "+Float.toString(enemies[i].x));
         }
         x = 0; 
         xSpeed = 1;
@@ -105,31 +111,24 @@ public class GameView extends SurfaceView
 
     protected void Draw(Canvas canvas) 
     {
-    	/*
-		 if (x == getWidth() - playerStandingBmp.getWidth()) {
-		        xSpeed = -1;
-		 }
-		 if (x == 0) {
-		        xSpeed = 1;
-		 }
-		 x = x + xSpeed;
-		 canvas.drawColor(Color.BLACK);
-		 canvas.drawBitmap(playerStandingBmp, x , 10, null);
-		 */
-		 for (int i=0; i<numEnemies;i++)
-		 {
-			 Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
-			 Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
-			 enemies[i].Draw(canvas);
-			 //canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
-		 }
-		 if(draggable)
-		 {
-			 Paint paint = new Paint();
-			 paint.setColor(Color.WHITE);
-			 //canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
-			 canvas.drawLine(startX,startY,currentX,currentY, paint);
-		 }
+    	canvas.drawColor(Color.BLACK);
+		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
+		 
+		for (int i=0; i<numEnemies;i++)
+		{
+//			Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
+//			Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
+			enemies[i].Draw(canvas);
+			//canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
+		}
+		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
+		if(lineDrawn)
+		{
+			Paint paint = new Paint();
+			paint.setColor(Color.WHITE);
+			//canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
+			canvas.drawLine(startX,startY,currentX,currentY, paint);
+		}
     }
     
 
@@ -145,18 +144,29 @@ public class GameView extends SurfaceView
         {
 	        case MotionEvent.ACTION_DOWN: 
 	        {
-	        	Snap(x,y);
+	        	
+	        	//Log.d("aaaa",String.format("Screen Coordinates = (%f,%f)",x,y));
+//	        	startX = x;
+//	        	startY = y;
+	        	if(Snap(x,y))
+	        	{
+	        		draggable=true;
+	        	}
 	            //mActivePointerId = ev.getPointerId(0);
 	            break;
 	        }
 	
 	        case MotionEvent.ACTION_MOVE: 
 	        {
-	            //final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-	            // Only move if the ScaleGestureDetector isn't processing a gesture.
-	            draggable = true;
-	            currentX = x;
-	            currentY = y;
+	        	if(draggable)
+	        	{
+		        	lineDrawn = true;
+		            //final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+		            // Only move if the ScaleGestureDetector isn't processing a gesture.
+		            
+		            currentX = x;
+		            currentY = y;
+	        	}
 	
 	            break;
 	        }
@@ -164,6 +174,7 @@ public class GameView extends SurfaceView
 	        case MotionEvent.ACTION_UP: 
 	        {
 	            draggable = false;
+	            lineDrawn = false;
 	            currentX = x;
 	            currentY = y;
 	            break;
@@ -171,9 +182,10 @@ public class GameView extends SurfaceView
 	
 	        case MotionEvent.ACTION_CANCEL: 
 	        {
+	        	lineDrawn = false;
 	            draggable = false;
-	            currentX = x;
-	            currentY = y;
+	            //currentX = x;
+	            //currentY = y;
 	            break;
 	        }
         }
@@ -185,8 +197,9 @@ public class GameView extends SurfaceView
      * @param x the horizontal coordinate of the initial tap point
      * @param y the vertical coordinate of the initial tap point
      */
-    private void Snap(float x,float y)
+    private boolean Snap(float x,float y)
     {
+    	boolean change = false;
     	double smallestDist, currentDist;
     	smallestDist = Double.MAX_VALUE;
     	float centerX,centerY;
@@ -197,13 +210,19 @@ public class GameView extends SurfaceView
     		height = enemies[i].getBody().getHeight();
     		centerX = enemies[i].getBody().getX()+(width/2);
     		centerY = enemies[i].getBody().getY()+(height/2);
+    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
+    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
+    		Log.d("brisketbeef2","width: "+String.format("%d", width));
+    		Log.d("brisketbeef2","height: "+String.format("%d", height));
     		if(Math.abs((x-centerX))<width/2)
     		{
+    			Log.d("brisket","I'm in da loop mah");
     			if(Math.abs((y-centerY))<height/2)
     			{	
     				currentDist = Math.sqrt((Math.pow(x-centerX,2)+(Math.pow(y-centerY,2))));
 	    			if(currentDist<smallestDist)
 	    			{
+	    				change = true;
 	    				smallestDist = currentDist;	
 	    				startX = centerX;
 	    				startY = centerY;
@@ -211,5 +230,6 @@ public class GameView extends SurfaceView
     			}
     		}
     	}
+    	return change;
     }
 }

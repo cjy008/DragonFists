@@ -42,6 +42,8 @@ public class Enemy {
 		//Physics Variables
 		this.x = x;
 		this.y = y;
+		this.body.setX((int)x);
+		this.body.setY((int)y);
 		this.velx = velx;
 		this.vely = vely;
 	}

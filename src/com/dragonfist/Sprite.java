@@ -26,7 +26,7 @@ public class Sprite {
         * @return the left most index of the Bitmap rectangle
         */
        public int getX() {
-           return bmp.getWidth();
+           return x;
        }
        
        /**
@@ -34,7 +34,7 @@ public class Sprite {
         * @return the top most most index of the Bitmap rectangle
         */
        public int getY() {
-           return bmp.getHeight();
+           return y;
        }
        
        /**
