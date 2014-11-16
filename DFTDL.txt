@@ -1,4 +1,9 @@
--Fix line jumping between boolean draggable turning on and off.
-	-Try: changing draggable to true ONLY when the player has moved finger
 -Fix onResume();
--Change androidOrientation landscape permanently
+-Change Start position
+-Impart velocity based on Snap return.
+-Draw character.
+-Put in other placeholders for enemy.
+-Score counter
+-Main menu
+-Make circle with translucent color.
+-Despawn enemies after off screen.

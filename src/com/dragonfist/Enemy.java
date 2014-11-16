@@ -71,6 +71,23 @@ public class Enemy {
 	{ body.Draw(canvas); }
 	
 	/**
+	 * @return the x position of the sprite's center
+	 */
+	public float getCenX()
+	{
+		return x+(body.getWidth()/2);
+	}
+	/**
+	 * 
+	 * @return the y position of the sprite's center
+	 */
+	public float getCenY()
+	{
+
+		return y+(body.getHeight()/2);
+	}
+	
+	/**
 	 * @return Sprite object needed for call to draw method
 	 */
 	public Sprite getBody()

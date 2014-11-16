@@ -25,14 +25,20 @@ public class GameView extends SurfaceView
     public static float testAspectRatio = (float)(1280.0/720.0);
     
     //Logic Variables
+    private int taggedIndex;
     private int x;
     private int xSpeed;
     private float startX, startY, currentX, currentY;
     private boolean draggable, lineDrawn;
+    private Paint circlePaint;
+    private Paint linePaint;
+    private float aspectSkewFactor;
+    private int circleRadius;
     
     //Sprites
     private Enemy enemies[];
     private Player player;
+
     private int numEnemies;
     
     EnemySpawner enemySpawner;
@@ -65,6 +71,7 @@ public class GameView extends SurfaceView
         enemies = new Enemy[numEnemies];
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        aspectSkewFactor = ((float)screenWidth/(float)screenHeight)/testAspectRatio;
     	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
         enemySpawner = new EnemySpawner(this);
         for(int i=0;i<numEnemies;i++)
@@ -72,8 +79,6 @@ public class GameView extends SurfaceView
         	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
         	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
         	enemies[i] = enemySpawner.initializeEnemy();
-        	
-        	Log.d("Alpha Test", "enemies[i].x: "+Float.toString(enemies[i].x));
         }
         x = 0; 
         xSpeed = 1;
@@ -81,6 +86,17 @@ public class GameView extends SurfaceView
         startY = 0;
         currentX = 0;
         currentY = 0;
+        linePaint = new Paint();
+        linePaint.setColor(Color.WHITE);
+        linePaint.setStrokeWidth(6*(aspectSkewFactor));
+        circleRadius = (int)(60*aspectSkewFactor);
+        circlePaint = new Paint();
+        circlePaint.setStrokeWidth(6*((aspectSkewFactor)));
+        circlePaint.setColor(Color.CYAN);
+        circlePaint.setAlpha((int) 122);	//Half way translucent
+        
+        
+        
         
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -135,6 +151,14 @@ public class GameView extends SurfaceView
     	canvas.drawColor(Color.BLACK);
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
 		 
+		
+		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
+		if(lineDrawn)
+		{
+			//canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
+			canvas.drawLine(startX,startY,currentX,currentY, linePaint);
+			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
+		}
 		for (int i=0; i<numEnemies;i++)
 		{
 //			Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
@@ -142,13 +166,9 @@ public class GameView extends SurfaceView
 			enemies[i].Draw(canvas);
 			//canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
 		}
-		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
 		if(lineDrawn)
 		{
-			Paint paint = new Paint();
-			paint.setColor(Color.WHITE);
-			//canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
-			canvas.drawLine(startX,startY,currentX,currentY, paint);
+			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
 		}
     }
     
@@ -229,8 +249,8 @@ public class GameView extends SurfaceView
     	{
     		width = enemies[i].getBody().getWidth();
     		height = enemies[i].getBody().getHeight();
-    		centerX = enemies[i].getBody().getX()+(width/2);
-    		centerY = enemies[i].getBody().getY()+(height/2);
+    		centerX = enemies[i].getCenX();
+    		centerY = enemies[i].getCenY();
 //    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
 //    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 //    		Log.d("brisketbeef2","width: "+String.format("%d", width));
@@ -244,9 +264,10 @@ public class GameView extends SurfaceView
 	    			if(currentDist<smallestDist)
 	    			{
 	    				change = true;
-	    				smallestDist = currentDist;	
+	    				smallestDist = currentDist;	    				
 	    				startX = centerX;
 	    				startY = centerY;
+	    				taggedIndex = i;
 	    			}
     			}
     		}
@@ -260,6 +281,14 @@ public class GameView extends SurfaceView
 		for(int i=0;i<numEnemies;i++)
 		{
 			enemies[i].update(timePassed,i);
+			if(draggable)
+			{
+				if(i==taggedIndex)
+				{
+					startX = enemies[i].getCenX();
+					startY = enemies[i].getCenY();
+				}
+			}
 		}
 	}
 	
