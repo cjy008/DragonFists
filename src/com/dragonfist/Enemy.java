@@ -12,7 +12,8 @@ public class Enemy {
 
 	public float x,y, radius;
 	public double velx,vely,accx,accy;
-	private Sprite body;
+	public boolean alive;
+	public Sprite body;
 	private static int enemyBmp[];
 	static
 	{
@@ -49,22 +50,21 @@ public class Enemy {
 		this.body.setY((int)y);
 		this.velx = velx;
 		this.vely = vely;
+		this.alive = true;
 		Log.d("Initialization", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 
-	public void update(float passedTime,int index)
+	public void update(float passedTime)
 	{
 		x= (float) (x+(velx*passedTime));
 		velx = velx+(accx*passedTime);
 		accy = EnemySpawner.gravity;
 		vely = vely+(accy*passedTime);
 		y= (float) (y+(vely*passedTime));
-		if(index==1)
-		{
 			Log.d("Updating", x + " " + y);
-		}
 		body.setX((int)x);
 		body.setY((int)y);
+		
 	}
 	
 	public void Draw(Canvas canvas)
@@ -92,4 +92,9 @@ public class Enemy {
 	 */
 	public Sprite getBody()
 	{ return body; }
+	
+	// this doesnt work!!
+	public void remove(Enemy enemy){
+		enemy=null;
+	}
 }
