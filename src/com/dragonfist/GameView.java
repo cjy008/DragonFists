@@ -20,7 +20,9 @@ public class GameView extends SurfaceView
 	//Android syntax variables
     private SurfaceHolder holder;
     private GameThread GT;
-    private int screenHeight, screenWidth;
+    public static int screenWidth;
+    public static int screenHeight;
+    public static float testAspectRatio = (float)(1280.0/720.0);
     
     //Logic Variables
     private int x;
@@ -61,7 +63,8 @@ public class GameView extends SurfaceView
         enemies = new Enemy[numEnemies];
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
-        
+    	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
+    	
         for(int i=0;i<numEnemies;i++)
         {
         	enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
@@ -108,6 +111,21 @@ public class GameView extends SurfaceView
         });
         
     }
+    
+    /**
+	 * Resize the Bitmap image to account for screen size and width
+	 * @return the new scaled image that accounts for the screen size
+	 */
+	public Bitmap scaleFactor(Bitmap bmp)
+	{
+		float thisAspectRatio = ((float)(GameView.screenWidth)/(float)(GameView.screenHeight));
+		//Scale y FIRST!!!
+		float scaleY = GameView.screenWidth/GameView.screenHeight;
+		//Scale the horizontal proportional to the horizontal;
+		float scaleX = (thisAspectRatio/GameView.testAspectRatio)*(bmp.getWidth()*(scaleY/bmp.getHeight()));
+		
+		return Bitmap.createScaledBitmap(bmp, (int)(bmp.getWidth()*scaleX), (int)(bmp.getHeight()*scaleY), false);
+	}
 
     protected void Draw(Canvas canvas) 
     {
@@ -210,10 +228,10 @@ public class GameView extends SurfaceView
     		height = enemies[i].getBody().getHeight();
     		centerX = enemies[i].getBody().getX()+(width/2);
     		centerY = enemies[i].getBody().getY()+(height/2);
-    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
-    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
-    		Log.d("brisketbeef2","width: "+String.format("%d", width));
-    		Log.d("brisketbeef2","height: "+String.format("%d", height));
+//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
+//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
+//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
+//    		Log.d("brisketbeef2","height: "+String.format("%d", height));
     		if(Math.abs((x-centerX))<width/2)
     		{
     			Log.d("brisket","I'm in da loop mah");

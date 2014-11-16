@@ -4,6 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
+/**
+ * 
+ * @author Dylan
+ *
+ */
 public class Player 
 {
 	//Do NOT use position variables! USE THE SPRITE OBJECT!!!!
@@ -94,6 +99,10 @@ public class Player
 	public void update()
 	{ }
 	
+	/**
+	 * 
+	 * @param canvas the 
+	 */
 	public void Draw(Canvas canvas)
 	{ body.Draw(canvas); }
 }

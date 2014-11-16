@@ -5,8 +5,10 @@ import java.util.Random;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 public class Enemy {
+
 	public float x,y, radius;
 	public double velx,vely,accx,accy;
 	private Sprite body;
@@ -34,7 +36,7 @@ public class Enemy {
 	public Enemy (GameView gameView, float x,float y,double velx,double vely)
 	{
 		//Drawing Variables
-		body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce));
+		body = new Sprite(gameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce)));
 		// TODO Replace the line of code above with the TWO LINES of code below once the enemy images have been integrated
 		//Random randNumGen = new Random();
 		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
@@ -47,6 +49,8 @@ public class Enemy {
 		this.velx = velx;
 		this.vely = vely;
 	}
+	
+	
 	
 	public void update(float passedTime)
 	{

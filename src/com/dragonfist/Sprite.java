@@ -55,6 +55,8 @@ public class Sprite {
        public void setBmp(Bitmap bmp) {
     	   this.bmp = bmp;
        }
+       public Bitmap getBmp() 
+       { return bmp; }
        public void Draw(Canvas canvas) {
              canvas.drawBitmap(bmp, x , y, null);
        }
