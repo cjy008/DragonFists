@@ -5,6 +5,7 @@ import java.util.Random;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.util.Log;
 
 public class Enemy {
 	public float x,y, radius;
@@ -46,15 +47,20 @@ public class Enemy {
 		this.body.setY((int)y);
 		this.velx = velx;
 		this.vely = vely;
+		Log.d("Initialization", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 	
-	public void update(float passedTime)
+	public void update(float passedTime,int index)
 	{
 		x= (float) (x+(velx*passedTime));
 		velx = velx+(accx*passedTime);
+		accy = EnemySpawner.gravity;
 		vely = vely+(accy*passedTime);
 		y= (float) (y+(vely*passedTime));
-		
+		if(index==1)
+		{
+			Log.d("Updating", x + " " + y);
+		}
 		body.setX((int)x);
 		body.setY((int)y);
 	}

@@ -1,6 +1,7 @@
 package com.dragonfist;
 import java.util.*;
 import java.lang.*;
+import android.content.Context;
 
 public class EnemySpawner {
 	private float acceleration;
@@ -12,12 +13,13 @@ public class EnemySpawner {
 	int edge;
 	
 	final int bufferspace = 20;
-	final int screensize = 100;
-	final int gravity = 10;
+	int screenWidth = GameView.screenWidth;
+    int screenHeight = GameView.screenHeight;
+	final static int gravity = 2;
 	
 	Random randomGenerator = new Random();
 	
-	public void EnemySpawner(GameView gameView){
+	public EnemySpawner(GameView gameView){
 		this.gameView = gameView;
 	}
 	
@@ -26,6 +28,7 @@ public class EnemySpawner {
 		
 		acceleration = 0;
 		velocityX = 0;
+		velocityY = 0;
 		positionX = 0;
 		positionY = 0;
 
@@ -45,36 +48,36 @@ public class EnemySpawner {
 		// On the left edge of the screen
 		if(edge == 0){
 			positionX = -bufferspace;
-			// 20 + screensize + 20 
-			int edgeLeft = screensize + bufferspace + 1;
+			// 20 + screenHeight + 20 
+			int edgeLeft = screenHeight + bufferspace + 1;
 			positionY = randomGenerator.nextInt(edgeLeft) - bufferspace;
 			
 		}
 		// On the top edge of the screen
 		if(edge == 1){
 			positionY = -bufferspace;
-			int edgeTop = screensize + (bufferspace * 2) + 1;
+			int edgeTop = screenWidth + (bufferspace * 2) + 1;
 			positionX = randomGenerator.nextInt(edgeTop) - bufferspace;
 		}
 		// On the right edge of the screen
 		if(edge == 2){
-			positionX = screensize + bufferspace;
-			int edgeRight = screensize + bufferspace + 1;
+			positionX = screenHeight + bufferspace;
+			int edgeRight = screenHeight + bufferspace + 1;
 			positionY = randomGenerator.nextInt(edgeRight) - bufferspace;
 		}
 	}
 
 	
 	private void setVelocity(){
-		if (positionY < (screensize + bufferspace) /2){
+		if (positionY > (screenHeight + bufferspace) /2){
 			double velocityY =10;
-			float distanceY = screensize + bufferspace- positionY;
+			float distanceY = screenHeight + bufferspace- positionY;
 			double time = (-velocityY + Math.sqrt( velocityY *velocityY + 2 * gravity *distanceY)) / gravity;
-			float distanceX = positionX - (screensize/2);
+			float distanceX = (screenWidth/2) - positionX;
 			velocityX = distanceX / time;
 			}else{
-				double time = Math.sqrt((screensize + bufferspace) *2 / gravity);
-				float distance = positionX - (screensize/2);
+				double time = Math.sqrt((screenHeight + bufferspace) *2 / gravity);
+				float distance = (screenWidth/2)-positionX;
 				velocityX = distance / time;
 			}
 	}

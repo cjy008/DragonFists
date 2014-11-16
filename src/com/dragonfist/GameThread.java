@@ -28,6 +28,7 @@ public class GameThread extends Thread {
                            synchronized (view.getHolder()) {
                         	   //Update!
                         	   view.Draw(c);
+                        	   view.Update(ticksPS);
                            }
                     } finally {
                            if (c != null) {
