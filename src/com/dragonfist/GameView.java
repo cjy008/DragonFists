@@ -34,6 +34,8 @@ public class GameView extends SurfaceView
     private Enemy enemies[];
     private Player player;
     private int numEnemies;
+    
+    EnemySpawner enemySpawner;
 
     public GameView(Context context) {
     	super(context);
@@ -64,11 +66,12 @@ public class GameView extends SurfaceView
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
     	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
-    	
+        enemySpawner = new EnemySpawner(this);
         for(int i=0;i<numEnemies;i++)
         {
-        	enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
         	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	enemies[i] = enemySpawner.initializeEnemy();
         	
         	Log.d("Alpha Test", "enemies[i].x: "+Float.toString(enemies[i].x));
         }
@@ -250,4 +253,36 @@ public class GameView extends SurfaceView
     	}
     	return change;
     }
+    
+	public void Update(float timePassed)
+	{
+		timePassed = timePassed/1000;
+		for(int i=0;i<numEnemies;i++)
+		{
+			enemies[i].update(timePassed,i);
+		}
+	}
+	
+	double Distance( Enemy a, Enemy b )
+	{
+	  return Math.sqrt( (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) );
+	}
+	 
+	boolean isColliding( Enemy a, Enemy b )
+	{
+	  float r = a.radius + b.radius;
+	  return r < Distance( a, b );
+	}
+	 
+	/*boolean CirclevsCircleOptimized( Enemy a, Enemy b )
+	{
+	  float r = a.radius + b.radius;
+	  r *= r;
+	  return r < (a.x + b.x)^2 + (a.y + b.y)^2;
+	}*/
+	
+	/*public static void main(String[] args){
+		GameView test = new GameView();
+	}
+	*/
 }
