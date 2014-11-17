@@ -1,9 +1,34 @@
--Fix onResume();
--Change Start position
--Impart velocity based on Snap return.
--Draw character.
--Put in other placeholders for enemy.
--Score counter
--Main menu
--Make circle with translucent color.
--Despawn enemies after off screen.
+Game
+	-Fix onResume()
+		-At the moment, when we exit and resume the app, the app crashes.
+		-Make sure we save state correctly so that we can return to the game and continue playing!
+	-Put in Player attack feature!
+		-Impart velocity to enemies once boolean true is returned by Snap()
+	-Allow dead enemies to kill alive enemies if they collide
+		-If enemies are dead they should kill other enemies and a collision should occur.
+	-Score counter
+		-Keep a counter that indicates how many enemies that player has defeated
+		-Despawn enemies after off screen.
+			-If they were hit by player AKA if(Enemy.alive == false) then add 1 to score.
+	
+	-Automatically generate enemies on a timer.
+		-Enemies spawn with faster velocities as time goes on.
+		-Limited amount of enemies on screen at once.				
+	
+	-Strength bar
+		-Decrements based off length of line drawn by Snap().
+		-Slowly regenerates.
+		-Draw strength bar!
+	
+Art
+	-Main character (Bruce)
+	-Draw treasure box for Bruce to defend.
+	-Put in enemy sprite.
+	-Background
+	-Menu Background and buttons
+
+Menu
+	-Start Game button
+		-Starts the GameActivity
+		-Destroys self
+
