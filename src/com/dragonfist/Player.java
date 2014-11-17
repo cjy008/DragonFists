@@ -105,4 +105,12 @@ public class Player
 	 */
 	public void Draw(Canvas canvas)
 	{ body.Draw(canvas); }
+	
+	public static void hit(Enemy enemy,int xAcc, int yAcc)
+	{
+		//TODO Reduce Player Strength by relative amount (Math.sqrt(Math.pow(xAcc,2)+Math.pow(yAcc,2) is "amount of force")
+		//TODO Change Player sprite
+		//TODO Change Player position
+		enemy.hit(xAcc,yAcc);
+	}
 }

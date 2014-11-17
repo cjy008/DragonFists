@@ -2,9 +2,9 @@ package com.dragonfist;
 import java.util.*;
 import java.lang.*;
 import android.content.Context;
+import android.util.Log;
 
 public class EnemySpawner {
-	private float acceleration;
 	private double velocityX;
 	private double velocityY =0;
 	private float positionX;
@@ -12,8 +12,9 @@ public class EnemySpawner {
 	private float positionY;
 	int edge;
 	
+	//TODO Make bufferspace relative to screensize
 	final static public int bufferspace = 40;
-	int screenWidth = GameView.screenWidth;
+	static int screenWidth = GameView.screenWidth;
     static int screenHeight = GameView.screenHeight;
 	final static int gravity = screenHeight/60;
 	
@@ -26,11 +27,6 @@ public class EnemySpawner {
 	// We're creating a 20 pixel border around the screen of size 100
 	public Enemy initializeEnemy(){
 		
-		acceleration = 0;
-		velocityX = 0;
-		velocityY = 0;
-		positionX = 0;
-		positionY = 0;
 
 		initializePosition();
 		
@@ -81,8 +77,10 @@ public class EnemySpawner {
 			float distanceX = (screenWidth/2) - positionX;
 			velocityX = distanceX / time;
 			}else{*/
-				double time = Math.sqrt((screenHeight) *2 / gravity);
+				double time = Math.sqrt((screenHeight-positionY) *2 / gravity);
 				float distance = (screenWidth/2)-positionX;
+				Log.d("whoops",String.format("distance: %f",distance));
+				Log.d("whoops2",String.format("time: %f",time));
 				velocityX = distance / time;
 			//}
 	}

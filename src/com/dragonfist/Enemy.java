@@ -11,8 +11,10 @@ import android.util.Log;
 public class Enemy {
 
 	public float x,y, radius;
-	public double velx,vely,accx,accy;
-	public boolean alive;
+	public double velx,vely,accx,accy,health;
+	public boolean alive,initialized; //These two do different things.
+											//alive - If enemy has been killed - they can still hit other enemies!
+											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
 	public Sprite body;
 	private static int enemyBmp[];
 	static
@@ -46,22 +48,22 @@ public class Enemy {
 		//Physics Variables
 		this.x = x;
 		this.y = y;
-		this.body.setX((int)x);
-		this.body.setY((int)y);
+		body.setX((int)x);
+		body.setY((int)y);
 		this.velx = velx;
 		this.vely = vely;
-		this.alive = true;
+		alive = true;
+		health = Math.sqrt(Math.pow(velx,2)+Math.pow(vely,2));
+		initialized = true;
+		Log.d("Initialization Health",String.format("Initial health: %f", health));
 		Log.d("Initialization", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 
 	public void update(float passedTime)
 	{
-		x= (float) (x+(velx*passedTime));
-		velx = velx+(accx*passedTime);
-		accy = EnemySpawner.gravity;
-		vely = vely+(accy*passedTime);
-		y= (float) (y+(vely*passedTime));
-			Log.d("Updating", x + " " + y);
+		x += (float)(velx*passedTime);
+		vely += (EnemySpawner.gravity*passedTime);
+		y+= (float) (vely*passedTime);
 		body.setX((int)x);
 		body.setY((int)y);
 		
@@ -90,11 +92,34 @@ public class Enemy {
 	/**
 	 * @return Sprite object needed for call to draw method
 	 */
+	/**
+	 * 
+	 * @param xAcc The amount of horizontal acceleration imparted by the hit
+	 * @param yAcc The amount of vertical acceleration imparted by the hit
+	 * 
+	 * Determines whether the enemy "dies" due to the force from the hit.
+	 * Ensures that the player can't just hit each enemy individually
+	 * with weak hits to kill all the enemies - too easy.
+	 * 
+	 * 
+	 */
+	public void hit(double xFor, double yFor)
+	{
+		double mass = 1.2; //This just changes how powerful the hits are. Can give this attribute to enemies
+					  //if we want enemies with different weights.
+		velx += xFor/mass;
+		vely += yFor/mass;
+		double force = Math.sqrt(Math.pow(xFor,2)+Math.pow(yFor, 2));
+		health -= (force);								//Force is dependent on screen size because of pixel-scaled vectors!
+														//Therefore damage to health should be relative to screen size.
+														//However we already make health relative to initial velocity, which solves this problme.
+		Log.d("Hit Method",String.format("Enemy health is now %f",health));
+		if(health<0)
+		{
+			alive=false;		
+		}
+	}
+	
 	public Sprite getBody()
 	{ return body; }
-	
-	// this doesnt work!!
-	public void remove(Enemy enemy){
-		enemy=null;
-	}
 }

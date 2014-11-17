@@ -23,6 +23,7 @@ public class GameView extends SurfaceView
     public static int screenWidth;
     public static int screenHeight;
     public static float testAspectRatio = (float)(1280.0/720.0);
+    public static float aspectSkewFactor;
     public int bufferspace = 40;
     
     //Logic Variables
@@ -33,8 +34,9 @@ public class GameView extends SurfaceView
     private boolean draggable, lineDrawn;
     private Paint circlePaint;
     private Paint linePaint;
-    private float aspectSkewFactor;
     private int circleRadius;
+    private boolean punch;				//If the player releases an enemy, punch is set to true, the enemy will get hit, and
+    									//draggable will be set to false on the next call to Update().
     
     //Sprites
     private Enemy enemies[];
@@ -60,6 +62,9 @@ public class GameView extends SurfaceView
     	//Load Android Syntax Variables
         GT = new GameThread(this);
         holder = getHolder();
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        aspectSkewFactor = ((float)screenWidth/(float)screenHeight)/testAspectRatio;
         
         //Load Game Logic Variables
         numEnemies = 10;
@@ -70,9 +75,7 @@ public class GameView extends SurfaceView
     	//player.setY((int)(screenHeight*3.0/4 - player.getHeight()/2.0));
     	
         enemies = new Enemy[numEnemies];
-        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
-        aspectSkewFactor = ((float)screenWidth/(float)screenHeight)/testAspectRatio;
+
     	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
         enemySpawner = new EnemySpawner(this);
         for(int i=0;i<numEnemies;i++)
@@ -162,7 +165,7 @@ public class GameView extends SurfaceView
 		}
 		for (int i=0; i<numEnemies;i++)
 		{
-			if(enemies[i].alive)
+			if(enemies[i].initialized)
 			{
 	//			Log.d("woohX",Integer.toString(enemies[i].getBody().getX()));
 	//			Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
@@ -218,10 +221,14 @@ public class GameView extends SurfaceView
 	
 	        case MotionEvent.ACTION_UP: 
 	        {
-	            draggable = false;
-	            lineDrawn = false;
-	            currentX = x;
-	            currentY = y;
+	        	if(draggable)
+	        	{
+		        	punch=true;
+		            draggable = false;
+		            lineDrawn = false;
+		            currentX = x;
+		            currentY = y;
+	        	}
 	            break;
 	        }
 	
@@ -263,7 +270,6 @@ public class GameView extends SurfaceView
 	//    		Log.d("brisketbeef2","height: "+String.format("%d", height));
 	    		if(Math.abs((x-centerX))<width/2)
 	    		{
-	    			Log.d("brisket","I'm in da loop mah");
 	    			if(Math.abs((y-centerY))<height/2)
 	    			{	
 	    				currentDist = Math.sqrt((Math.pow(x-centerX,2)+(Math.pow(y-centerY,2))));
@@ -288,15 +294,20 @@ public class GameView extends SurfaceView
 		timePassed = timePassed/1000;
 		for(int i=0;i<numEnemies;i++)
 		{
-			if(enemies[i].alive)
+			if(enemies[i].initialized)
 			{
 				enemies[i].update(timePassed);
-				if(draggable)
+				if(i==taggedIndex)
 				{
-					if(i==taggedIndex)
+					if(draggable)
 					{
 						startX = enemies[i].getCenX();
 						startY = enemies[i].getCenY();
+					}
+					if(punch)
+					{
+						Player.hit(enemies[i],(int)(currentX-startX),(int)(currentY-startY));
+						punch=false;
 					}
 				}
 			}
