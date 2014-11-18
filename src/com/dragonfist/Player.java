@@ -11,7 +11,7 @@ import android.graphics.Canvas;
  */
 public class Player 
 {
-	//Do NOT use position variables! USE THE SPRITE OBJECT!!!!
+	private int x,y;
 	
 	//Drawing variables
 	private Sprite body;
@@ -50,8 +50,8 @@ public class Player
 		playerBackStrike = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce);
 		
 		body = new Sprite(playerStanding);
-		body.setX((int)(gameView.getWidth()/2.0 - body.getHeight()/2.0));
-		body.setY((int)(gameView.getHeight()*3.0/4.0 - body.getHeight()/2.0));
+		x = ((int)(gameView.getWidth()/2.0 - body.getHeight()/2.0));
+		y = ((int)(gameView.getHeight()*3.0/4.0 - body.getHeight()/2.0));
 	}
 	
 	
@@ -69,14 +69,14 @@ public class Player
 			if (xDir >= 0)
 			{ 
 				body.setBmp(playerRightStrike);
-				body.setX(enemySprite.getX() - body.getWidth());
-				body.setY((int)(enemySprite.getY() - body.getWidth()*yDir/xDir));
+				x=(enemySprite.getX() - body.getWidth());
+				y=((int)(enemySprite.getY() - body.getWidth()*yDir/xDir));
 			}
 			else
 			{ 
 				body.setBmp(playerLeftStrike);
-				body.setX(enemySprite.getX() + body.getWidth());
-				body.setY((int)(enemySprite.getY() + body.getWidth()*yDir/xDir));
+				x=(enemySprite.getX() + body.getWidth());
+				y=((int)(enemySprite.getY() + body.getWidth()*yDir/xDir));
 			}
 		}
 		else									//Attack angle is either up or down
@@ -84,14 +84,14 @@ public class Player
 			if (yDir >= 0)
 			{ 
 				body.setBmp(playerFrontStrike);
-				body.setY(enemySprite.getY() - body.getHeight());
-				body.setX((int)(enemySprite.getX() - body.getHeight()*xDir/yDir));
+				x=((int)(enemySprite.getX() - body.getHeight()*xDir/yDir));
+				y=(enemySprite.getY() - body.getHeight());
 			}
 			else
 			{ 
 				body.setBmp(playerBackStrike);
-				body.setY(enemySprite.getY() - body.getHeight());
-				body.setX((int)(enemySprite.getX() - body.getHeight()*xDir/yDir));
+				x=((int)(enemySprite.getX() - body.getHeight()*xDir/yDir));
+				y=(enemySprite.getY() - body.getHeight());				
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class Player
 	 * @param canvas the 
 	 */
 	public void Draw(Canvas canvas)
-	{ body.Draw(canvas); }
+	{ body.Draw(canvas,x,y); }
 	
 	public static void hit(Enemy enemy,int xAcc, int yAcc)
 	{

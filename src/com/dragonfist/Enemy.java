@@ -15,7 +15,8 @@ public class Enemy {
 	public boolean alive,initialized; //These two do different things.
 											//alive - If enemy has been killed - they can still hit other enemies!
 											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
-	public Sprite body;
+	public boolean flipped;			  //If enemy spawns on left, it is not flipped, if on right it is.
+	public static Sprite sprite;
 	private static int enemyBmp[];
 	static
 	{
@@ -37,21 +38,18 @@ public class Enemy {
 	 * @param velx the initial x direction velocity of the Enemy object
 	 * @param vely the initial y direction velocity of the Enemy object
 	 */
-	public Enemy (GameView gameView, float x,float y,double velx,double vely)
+	public Enemy (GameView gameView, float x,float y,double velx,double vely,boolean flipped)
 	{
-		//Drawing Variables
-		body = new Sprite(gameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce)));
-		// TODO Replace the line of code above with the TWO LINES of code below once the enemy images have been integrated
+		// TODO TWO LINES of code below once the enemy images have been integrated
 		//Random randNumGen = new Random();
 		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
 		
 		//Physics Variables
 		this.x = x;
 		this.y = y;
-		body.setX((int)x);
-		body.setY((int)y);
 		this.velx = velx;
 		this.vely = vely;
+		this.flipped = flipped;
 		alive = true;
 		health = Math.sqrt(Math.pow(velx,2)+Math.pow(vely,2));
 		initialized = true;
@@ -64,20 +62,20 @@ public class Enemy {
 		x += (float)(velx*passedTime);
 		vely += (EnemySpawner.gravity*passedTime);
 		y+= (float) (vely*passedTime);
-		body.setX((int)x);
-		body.setY((int)y);
 		
 	}
 	
 	public void Draw(Canvas canvas)
-	{ body.Draw(canvas); }
+	{ 
+		sprite.Draw(canvas,x,y,velx,vely,flipped);
+	}
 	
 	/**
 	 * @return the x position of the sprite's center
 	 */
 	public float getCenX()
 	{
-		return x+(body.getWidth()/2);
+		return x+(sprite.getWidth()/2);
 	}
 	/**
 	 * 
@@ -86,7 +84,7 @@ public class Enemy {
 	public float getCenY()
 	{
 
-		return y+(body.getHeight()/2);
+		return y+(sprite.getHeight()/2);
 	}
 	
 	/**
@@ -119,7 +117,4 @@ public class Enemy {
 			alive=false;		
 		}
 	}
-	
-	public Sprite getBody()
-	{ return body; }
 }

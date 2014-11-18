@@ -260,10 +260,10 @@ public class GameView extends SurfaceView
     	{
     		if(enemies[i].alive)
     		{
-	    		width = enemies[i].getBody().getWidth();
-	    		height = enemies[i].getBody().getHeight();
-	    		centerX = enemies[i].getBody().getX()+(width/2);
-	    		centerY = enemies[i].getBody().getY()+(height/2);
+	    		width = Enemy.sprite.getWidth();
+	    		height = Enemy.sprite.getHeight();
+	    		centerX = enemies[i].x+(width/2);
+	    		centerY = enemies[i].y+(height/2);
 	//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
 	//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 	//    		Log.d("brisketbeef2","width: "+String.format("%d", width));

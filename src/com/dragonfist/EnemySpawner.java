@@ -2,14 +2,15 @@ package com.dragonfist;
 import java.util.*;
 import java.lang.*;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 public class EnemySpawner {
 	private double velocityX;
-	private double velocityY =0;
+	private double velocityY;
 	private float positionX;
-	private GameView gameView;
 	private float positionY;
+	private GameView gameView;
 	int edge;
 	
 	//TODO Make bufferspace relative to screensize
@@ -22,6 +23,7 @@ public class EnemySpawner {
 	
 	public EnemySpawner(GameView gameView){
 		this.gameView = gameView;
+		Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
 	}
 	
 	// We're creating a 20 pixel border around the screen of size 100
@@ -33,8 +35,16 @@ public class EnemySpawner {
 		
 		setVelocity();
 		
+		if(positionX>screenWidth/2)			//Determines whether we need the enemy sprite to be flipped or not.
+		{
+
+			return new Enemy(gameView, positionX, positionY, velocityX, velocityY,true);
+		}
+		else
+		{
+			return new Enemy(gameView, positionX, positionY, velocityX, velocityY,false);
+		}
 		//Testing purposes
-		return new Enemy(gameView, positionX, positionY, velocityX, velocityY);
 		//System.out.println("X = " + positionX + " Y = " + positionY);
 	}
 	
