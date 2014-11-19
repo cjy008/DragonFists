@@ -11,7 +11,7 @@ import android.graphics.Canvas;
  */
 public class Player 
 {
-	private int x,y;
+	public int x,y;
 	
 	//Drawing variables
 	private Sprite body;
@@ -106,7 +106,7 @@ public class Player
 	public void Draw(Canvas canvas)
 	{ body.Draw(canvas,x,y); }
 	
-	public static void hit(Enemy enemy,int xAcc, int yAcc)
+	public void hit(Enemy enemy,int xAcc, int yAcc)
 	{
 		//TODO Reduce Player Strength by relative amount (Math.sqrt(Math.pow(xAcc,2)+Math.pow(yAcc,2) is "amount of force")
 		//TODO Change Player sprite

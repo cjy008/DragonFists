@@ -8,9 +8,7 @@ public class Sprite {
        private int x = 0;
        private int y = 0;
        private int width,height;
-       private GameView gameView;
        private Bitmap bmp;
-       private int bmpCount;
       
        public Sprite(Bitmap bmp) {
              this.bmp=bmp;

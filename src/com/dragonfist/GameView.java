@@ -1,14 +1,11 @@
 package com.dragonfist;
 
-import java.util.Random;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -19,7 +16,7 @@ public class GameView extends SurfaceView
 	
 	//Android syntax variables
     private SurfaceHolder holder;
-    private GameThread GT;
+    public GameThread GT;
     public static int screenWidth;
     public static int screenHeight;
     public static float testAspectRatio = (float)(1280.0/720.0);
@@ -28,8 +25,6 @@ public class GameView extends SurfaceView
     
     //Logic Variables
     private int taggedIndex;
-    private int x;
-    private int xSpeed;
     private float startX, startY, currentX, currentY;
     private boolean draggable, lineDrawn;
     private Paint circlePaint;
@@ -46,7 +41,7 @@ public class GameView extends SurfaceView
     
     EnemySpawner enemySpawner;
 
-    public GameView(Context context) {
+    public GameView(Context context,Bundle savedInstanceState) {
     	super(context);
     	
     	//Load Bitmap Images
@@ -69,7 +64,8 @@ public class GameView extends SurfaceView
         //Load Game Logic Variables
         numEnemies = 10;
         
-        player = new Player(this);
+
+    	player = new Player(this);
         //player = new Sprite(playerStandingBmp);
     	//player.setX(screenWidth/2 - player.getHeight()/2);
     	//player.setY((int)(screenHeight*3.0/4 - player.getHeight()/2.0));
@@ -78,14 +74,33 @@ public class GameView extends SurfaceView
 
     	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
         enemySpawner = new EnemySpawner(this);
-        for(int i=0;i<numEnemies;i++)
+        
+        if(savedInstanceState==null)
         {
-        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
-        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
-        	enemies[i] = enemySpawner.initializeEnemy();
+        	for(int i=0;i<numEnemies;i++)
+	        {
+	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+	        	enemies[i] = enemySpawner.initializeEnemy();
+	        }    
+        }        
+        else        	
+        {
+        	 // TODO Once we implement player strength: player.strength = savedInstanceState.getDouble("playerStrength", playerStrength);	        	 
+        	 // TODO Once we have a score counter: score = savedInstanceState.getInt("score");      	
+          	player.x = savedInstanceState.getInt("playerX", player.x);
+          	player.y = savedInstanceState.getInt("playerY", player.y);
+          	for(int i=0;i<numEnemies;i++)
+  	        {
+          		enemies[i] = new Enemy(savedInstanceState.getFloat(String.format("enemyX%d",i)),savedInstanceState.getFloat(String.format("enemyY%d",i)),
+          		      	  savedInstanceState.getDouble(String.format("enemyVelX%d",i)),
+          		      	  savedInstanceState.getDouble(String.format("enemyVelY%d",i)),
+        		          savedInstanceState.getBoolean(String.format("enemyFlipped%d",i)),
+          		      	  savedInstanceState.getFloat(String.format("enemyHealth%d",i)),
+          		          savedInstanceState.getBoolean(String.format("enemyAlive%d",i)),
+          		          savedInstanceState.getBoolean(String.format("enemyInitialized%d",i)));
+  	        }
         }
-        x = 0; 
-        xSpeed = 1;
         startX = 0;
         startY = 0;
         currentX = 0;
@@ -133,6 +148,40 @@ public class GameView extends SurfaceView
                              int width, int height) {}
         });
         
+    }
+    /**
+     * We pass in the important state variables to the activity's instance state.
+     * Intended Function: Everything else can be recreated from these variables.
+     * 
+     * @param savedInstanceState
+     */
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+      // Save UI state changes to the savedInstanceState.
+    	
+
+    	
+      // This bundle will be passed to onCreate if the process is
+      // killed and restarted.
+      for(int i=0; i<numEnemies;i++)
+      {	
+    	  savedInstanceState.putFloat(String.format("enemyX%d",i), enemies[i].x);
+    	  savedInstanceState.putFloat(String.format("enemyY%d",i), enemies[i].y);
+    	  savedInstanceState.putDouble(String.format("enemyVelX%d",i), enemies[i].velx);
+    	  savedInstanceState.putDouble(String.format("enemyVelY%d",i), enemies[i].vely);
+    	  savedInstanceState.putDouble(String.format("enemyHealth%d",i), enemies[i].health);
+          savedInstanceState.putBoolean(String.format("enemyAlive%d",i), enemies[i].alive);
+          savedInstanceState.putBoolean(String.format("enemyInitialized%d",i),enemies[i].initialized);
+          savedInstanceState.putBoolean(String.format("enemyFlipped%d",i),enemies[i].flipped);
+      }
+      
+      savedInstanceState.putFloat("playerX", player.x);
+      savedInstanceState.putFloat("playerY", player.y);
+	  // TODO Once we implement player strength: savedInstanceState.putDouble("playerStrength", playerStrength);
+	  
+ 
+	  // TODO Once we have a score counter: savedInstanceState.putInt("score",score);
+      
+      // etc.
     }
     
     /**
@@ -306,7 +355,7 @@ public class GameView extends SurfaceView
 					}
 					if(punch)
 					{
-						Player.hit(enemies[i],(int)(currentX-startX),(int)(currentY-startY));
+						player.hit(enemies[i],(int)(currentX-startX),(int)(currentY-startY));
 						punch=false;
 					}
 				}
