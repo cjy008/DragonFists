@@ -3,9 +3,8 @@ Game
 		-At the moment, when we exit and resume the app, the app crashes.
 		-Make sure we save state correctly so that we can return to the game and continue playing!
 	-Draw player sprite!
-	-Put in Player attack feature!
-		-Player needs to move
-		-Player needs to change animation.
+	-Edit in Player attack feature!
+		-Player should return to initial position after a set amount of time
 		-Calibrate so it feels more natural
 	-Allow dead enemies to kill alive enemies if they collide
 		-If enemies are dead they should kill other enemies and a collision should occur.

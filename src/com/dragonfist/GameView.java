@@ -155,7 +155,8 @@ public class GameView extends SurfaceView
     	canvas.drawColor(Color.BLACK);
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
 		 
-		
+    	player.Draw(canvas);
+
 		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
 		if(lineDrawn)
 		{
@@ -306,7 +307,7 @@ public class GameView extends SurfaceView
 					}
 					if(punch)
 					{
-						Player.hit(enemies[i],(int)(currentX-startX),(int)(currentY-startY));
+						player.hit(enemies[i],(currentX-startX),(currentY-startY));
 						punch=false;
 					}
 				}
