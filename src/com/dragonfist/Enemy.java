@@ -11,7 +11,7 @@ import android.util.Log;
 public class Enemy {
 
 	public float x,y, radius;
-	public double velx,vely,accx,accy,health;
+	public double velx,vely,health;
 	public boolean alive,initialized; //These two do different things.
 											//alive - If enemy has been killed - they can still hit other enemies!
 											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
@@ -31,14 +31,13 @@ public class Enemy {
 	}
 	
 	/**
-	 * 
-	 * @param gameView that creates the object
+	 * Use this method for initial construction of enemies - NOT after the game is resumed.
 	 * @param x the position that the Enemy object is initialized at
 	 * @param y the position that the Enemy object is initialized at
 	 * @param velx the initial x direction velocity of the Enemy object
 	 * @param vely the initial y direction velocity of the Enemy object
 	 */
-	public Enemy (GameView gameView, float x,float y,double velx,double vely,boolean flipped)
+	public Enemy (float x,float y,double velx,double vely,boolean flipped)
 	{
 		// TODO TWO LINES of code below once the enemy images have been integrated
 		//Random randNumGen = new Random();
@@ -54,7 +53,33 @@ public class Enemy {
 		health = Math.sqrt(Math.pow(velx,2)+Math.pow(vely,2));
 		initialized = true;
 		Log.d("Initialization Health",String.format("Initial health: %f", health));
-		Log.d("Initialization", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
+		Log.d("Initialization Positions", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
+	}
+	
+	/**
+	 * Use this method for after the game is resumed.
+	 * @param x the position that the Enemy object is initialized at
+	 * @param y the position that the Enemy object is initialized at
+	 * @param velx the initial x direction velocity of the Enemy object
+	 * @param vely the initial y direction velocity of the Enemy object
+	 */
+	public Enemy (float x,float y,double velx,double vely,boolean flipped, float health, boolean alive, boolean initialized)
+	{
+		// TODO TWO LINES of code below once the enemy images have been integrated
+		//Random randNumGen = new Random();
+		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
+		
+		//Physics Variables
+		this.x = x;
+		this.y = y;
+		this.velx = velx;
+		this.vely = vely;
+		this.flipped = flipped;
+		this.alive = true;
+		this.health = health;
+		this.initialized = true;
+		Log.d("After Resuming Health",String.format("Initial health: %f", health));
+		Log.d("After Resuming Positions", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 
 	public void update(float passedTime)
@@ -103,8 +128,9 @@ public class Enemy {
 	 */
 	public void hit(double xFor, double yFor)
 	{
-		double mass = 1.2; //This just changes how powerful the hits are. Can give this attribute to enemies
-					  //if we want enemies with different weights.
+		double mass = 1.0; //TODO 
+						   //OPTIONAL: This just changes how powerful the hits are. Can give this attribute to enemies
+					  	   //if we want enemies with different weights.
 		velx += xFor/mass;
 		vely += yFor/mass;
 		double force = Math.sqrt(Math.pow(xFor,2)+Math.pow(yFor, 2));

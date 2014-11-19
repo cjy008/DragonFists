@@ -11,7 +11,7 @@ import android.graphics.Canvas;
  */
 public class Player 
 {
-	private int x,y;
+	public int x,y;
 	
 	//Drawing variables
 	private Sprite body;
@@ -109,4 +109,5 @@ public class Player
 		}
 		enemy.hit(xDir,yDir);
 	}
+	
 }

@@ -8,9 +8,7 @@ public class Sprite {
        private int x = 0;
        private int y = 0;
        private int width,height;
-       private GameView gameView;
        private Bitmap bmp;
-       private int bmpCount;
       
        public Sprite(Bitmap bmp) {
              this.bmp=bmp;
@@ -83,7 +81,7 @@ public class Sprite {
     	   {
     		   matrix.setScale(-1, 1);
     	   }
-    	   matrix.postRotate((float)Math.toDegrees(Math.	atan((vely)/(velx))), (width / (float)2), (height / (float)2)); //rotate it
+    	   matrix.postRotate((float)Math.toDegrees(Math.atan((vely)/(velx))), (width / (float)2), (height / (float)2)); //rotate it
     	   matrix.postTranslate(x, y); //move it into x, y position
            canvas.drawBitmap(bmp,matrix, null);
      }

@@ -13,8 +13,8 @@ public class EnemySpawner {
 	private GameView gameView;
 	int edge;
 	
-	//TODO Make bufferspace relative to screensize
-	final static public int bufferspace = 40;
+	
+	final static public int bufferspace = 40;	//TODO Make bufferspace relative to screensize
 	static int screenWidth = GameView.screenWidth;
     static int screenHeight = GameView.screenHeight;
 	final static int gravity = screenHeight/60;
@@ -38,11 +38,11 @@ public class EnemySpawner {
 		if(positionX>screenWidth/2)			//Determines whether we need the enemy sprite to be flipped or not.
 		{
 
-			return new Enemy(gameView, positionX, positionY, velocityX, velocityY,true);
+			return new Enemy(positionX, positionY, velocityX, velocityY,true);
 		}
 		else
 		{
-			return new Enemy(gameView, positionX, positionY, velocityX, velocityY,false);
+			return new Enemy(positionX, positionY, velocityX, velocityY,false);
 		}
 		//Testing purposes
 		//System.out.println("X = " + positionX + " Y = " + positionY);
