@@ -83,7 +83,14 @@ public class GameView extends SurfaceView
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i] = enemySpawner.initializeEnemy();
+	        }
+        	for(int i=0;i<4;i++)
+	        {
+	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+	        	enemies[i].initialized = false;
 	        }    
+
         }        
         else        	
         {
@@ -317,8 +324,12 @@ public class GameView extends SurfaceView
     		{
 	    		width = Enemy.sprite.getWidth();
 	    		height = Enemy.sprite.getHeight();
+
 	    		centerX = enemies[i].x+(width/2);
 	    		centerY = enemies[i].y+(height/2);
+
+	     		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
+	     		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 	//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
 	//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 	//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
@@ -354,7 +365,22 @@ public class GameView extends SurfaceView
     
 	public void Update(float timePassed)
 	{
+		boolean spawnEnemy = false;
+		
 		timePassed = timePassed/1000;
+		
+		//TODO this slows down time when an enemy is tagged - perhaps make it feel smoother
+		if(draggable)
+		{
+			timePassed = timePassed/4; 
+		}
+		
+		//If true, the enemySpawner is signaling for an enemy to be spawned.
+		if (enemySpawner.increment(timePassed))
+		{
+			spawnEnemy = true;		
+		}
+		
 		for(int i=0;i<numEnemies;i++)
 		{
 			if(enemies[i].initialized)
@@ -372,6 +398,19 @@ public class GameView extends SurfaceView
 						player.hit(enemies[i],(int)(currentX-startX),(int)(currentY-startY));
 						punch=false;
 					}
+				}
+				if((enemies[i].x<0 ||enemies[i].x>screenWidth)&&(enemies[i].y<0||enemies[i].y>screenHeight))
+				{
+					enemies[i].initialized=false;
+				}
+			}
+			
+			else
+			{
+				if (spawnEnemy)
+				{
+					enemies[i]=enemySpawner.initializeEnemy();
+					spawnEnemy = false;
 				}
 			}
 		}

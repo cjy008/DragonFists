@@ -19,11 +19,26 @@ public class EnemySpawner {
     static int screenHeight = GameView.screenHeight;
 	final static int gravity = screenHeight/60;
 	
+	public float timeCounter;		
+	public float spawnTime;		//Enemies spawn every (spawnTime) in-game seconds. 
 	Random randomGenerator = new Random();
 	
 	public EnemySpawner(GameView gameView){
 		this.gameView = gameView;
+		timeCounter = 0;
+		spawnTime = 0.5f;
 		Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
+	}
+	
+	public boolean increment(float timePassed)
+	{
+		timeCounter+=timePassed;
+		if(timeCounter>spawnTime)
+		{
+			timeCounter = 0;
+			return true;
+		}
+		else return false;
 	}
 	
 	// We're creating a 20 pixel border around the screen of size 100
@@ -37,7 +52,6 @@ public class EnemySpawner {
 		
 		if(positionX>screenWidth/2)			//Determines whether we need the enemy sprite to be flipped or not.
 		{
-
 			return new Enemy(positionX, positionY, velocityX, velocityY,true);
 		}
 		else

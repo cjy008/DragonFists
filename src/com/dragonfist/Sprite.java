@@ -79,10 +79,15 @@ public class Sprite {
     	   Matrix matrix = new Matrix();
     	   if(flip)
     	   {
-    		   matrix.setScale(-1, 1);
+    		   matrix.postScale(-1, 1);
+        	   matrix.postRotate((float)Math.toDegrees(Math.atan((vely)/(velx))), (width / (float)2)-width, (height / (float)2)); //rotate it
+        	   matrix.postTranslate(x+width, y); //move it into x, y position
     	   }
-    	   matrix.postRotate((float)Math.toDegrees(Math.atan((vely)/(velx))), (width / (float)2), (height / (float)2)); //rotate it
-    	   matrix.postTranslate(x, y); //move it into x, y position
+    	   else
+    	   {
+	    	   matrix.postRotate((float)Math.toDegrees(Math.atan((vely)/(velx))), (width / (float)2), (height / (float)2)); //rotate it
+	    	   matrix.postTranslate(x, y); //move it into x, y position
+    	   }
            canvas.drawBitmap(bmp,matrix, null);
      }
        

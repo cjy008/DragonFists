@@ -1,8 +1,7 @@
 Game
-	-Draw player sprite!
 	-Put in Player attack feature!
 		-Player needs to move
-		-Player needs to change animation.
+		-Player needs to change sprite.
 		-Calibrate so it feels more natural
 	-Allow dead enemies to kill alive enemies if they collide
 		-If enemies are dead they should kill other enemies and a collision should occur.
