@@ -1,1 +1,3 @@
 -onStart/OnResume fails.
+-cause bruce 
+-add sound

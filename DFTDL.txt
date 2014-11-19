@@ -1,7 +1,6 @@
 Game
-	-Put in Player attack feature!
-		-Player needs to move
-		-Player needs to change sprite.
+	-Edit Player attack feature!
+		-Player should return to initial position after a set amount of time
 		-Calibrate so it feels more natural
 	-Allow dead enemies to kill alive enemies if they collide
 		-If enemies are dead they should kill other enemies and a collision should occur.
@@ -9,10 +8,12 @@ Game
 		-Keep a counter that indicates how many enemies that player has defeated
 		-Despawn enemies after off screen.
 			-If they were hit by player AKA if(Enemy.alive == false) then add 1 to score.
-	
-	-Automatically generate enemies on a timer.
-		-Enemies spawn with faster velocities as time goes on.
-		-Limited amount of enemies on screen at once.				
+	-OnPause
+		-Crashes on return button.
+		-Doesn't crash in any other known cases.
+	-Enemy spawning
+		-Calibrate so game is challenging yet possible to win. 
+			-Perhaps energy calculations with number of enemies per second?				
 	
 	-Strength bar
 		-Decrements based off length of line drawn by Snap().
