@@ -1,7 +1,4 @@
 Game
-	-Fix onResume()
-		-At the moment, when we exit and resume the app, the app crashes.
-		-Make sure we save state correctly so that we can return to the game and continue playing!
 	-Draw player sprite!
 	-Put in Player attack feature!
 		-Player needs to move
@@ -32,6 +29,6 @@ Art
 
 Menu
 	-Start Game button
-		-Starts the GameActivity
-		-Destroys self
+		-Starts the actual Game
+	-High Scores
 

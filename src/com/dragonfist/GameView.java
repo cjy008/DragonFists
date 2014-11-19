@@ -25,6 +25,7 @@ public class GameView extends SurfaceView
     
     //Logic Variables
     private int taggedIndex;
+    private GameView selfReference;
     private float startX, startY, currentX, currentY;
     private boolean draggable, lineDrawn;
     private Paint circlePaint;
@@ -55,7 +56,7 @@ public class GameView extends SurfaceView
     	
     	
     	//Load Android Syntax Variables
-        GT = new GameThread(this);
+    	selfReference = this;
         holder = getHolder();
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
@@ -134,13 +135,18 @@ public class GameView extends SurfaceView
                      catch (InterruptedException e) 
                      { e.printStackTrace(); }
                   }
+           	   	  GT = null;
                }
 
                @Override
                public void surfaceCreated(SurfaceHolder holder) 
                {
+                   GT = new GameThread(selfReference);
             	   GT.setRunning(true);
-            	   GT.start();
+            	   if(GT.getState()==Thread.State.NEW)
+            	   {
+            		   GT.start();
+            	   }
                }
 
                @Override
@@ -336,6 +342,14 @@ public class GameView extends SurfaceView
     		}
     	}
     	return change;
+    }
+    
+    public void pause(boolean paused)
+    {
+    	if(GT!=null)
+    	{
+    		GT.pause(paused);
+    	}
     }
     
 	public void Update(float timePassed)
