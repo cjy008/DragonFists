@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Button;
 
 public class GameView extends SurfaceView 
 {
@@ -22,6 +23,7 @@ public class GameView extends SurfaceView
     public static float testAspectRatio = (float)(1280.0/720.0);
     public static float aspectSkewFactor;
     public int bufferspace = 40;
+    Button stateButton;
     
     //Logic Variables
     private int taggedIndex;
@@ -46,6 +48,7 @@ public class GameView extends SurfaceView
     	super(context);
     	
     	//Load Bitmap Images
+    	
     	
     	/* TODO add drawable resources to account for the different directional strikes
     	playerRightStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceRightStrike);
@@ -122,8 +125,13 @@ public class GameView extends SurfaceView
         circlePaint.setColor(Color.CYAN);
         circlePaint.setAlpha((int) 122);	//Half way translucent
         
+        //Initialize Start Button
         
-        
+        stateButton = new Button(this.getContext());
+        stateButton.setText("Start");
+    	stateButton.setX(screenWidth/2 - stateButton.getWidth()/2);
+    	stateButton.setY(screenWidth/2 - stateButton.getWidth()/2);
+        stateButton.setVisibility(Button.VISIBLE);
         
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -216,7 +224,7 @@ public class GameView extends SurfaceView
     {
     	canvas.drawColor(Color.BLACK);
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
-		 
+		
     	player.Draw(canvas);
 
 		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
@@ -240,6 +248,7 @@ public class GameView extends SurfaceView
 		{
 			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
 		}
+		stateButton.draw(canvas); 
     }
     
 

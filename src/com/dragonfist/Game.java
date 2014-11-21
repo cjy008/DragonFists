@@ -5,11 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View.OnClickListener;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 
 public class Game extends Activity {
 
-	GameView gameView; 
+	public GameView gameView; 
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -17,6 +20,24 @@ public class Game extends Activity {
         Log.d("onCreate","onCreate has been called");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(gameView = new GameView(this,savedInstanceState));
+        
+        /*
+        Button game_state = (Button)findViewById(R.id.game_state);
+        if (game_state != null)
+        {
+	        game_state.setText("Start");
+	        
+	        game_state.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					gameView.pause(false);
+					v.setVisibility(View.INVISIBLE);
+				}
+			});
+        }
+        */
     }
     
     @Override
@@ -28,7 +49,14 @@ public class Game extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        gameView.pause(false);
+        /*
+        Button gState = (Button)findViewById(R.id.game_state);
+        if (gState != null)
+        {
+        	gState.setText("Resume");
+        	gState.setVisibility(View.VISIBLE);
+        }*/
+        
         Log.d("onResume","onResume has been called");
     }
     

@@ -107,6 +107,12 @@ public class Player
 				y=(int)(enemy.y + body.getHeight());				
 			}
 		}
+		if (x < 0) { x = 0; }
+		else if (x > GameView.screenWidth - body.getWidth()) { x = GameView.screenWidth - body.getWidth(); }
+		if (y < 0) { y = 0; }
+		else if (y > GameView.screenHeight - body.getHeight()) { y = GameView.screenHeight - body.getHeight(); }
+		
+		
 		enemy.hit(xDir,yDir);
 	}
 	

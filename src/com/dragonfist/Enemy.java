@@ -16,19 +16,30 @@ public class Enemy {
 											//alive - If enemy has been killed - they can still hit other enemies!
 											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
 	public boolean flipped;			  //If enemy spawns on left, it is not flipped, if on right it is.
+	private int spriteIndex; 
 	public static Sprite sprite;
-	private static int enemyBmp[];
+	private static Sprite enemySprites[];
+	
+	public static final int DEAD_FRONT =  5;
+	public static final int DEAD_BACK = 6;
+	public static int DEAD_LEFT = 7;
+	public static int DEAD_RIGHT = 8;
+	
 	static
 	{
-		enemyBmp = new int[5];
-		
+		enemySprites = new Sprite[9];
 		// TODO add drawable resources to have different looking enemies
-		//enemyBmp[0] = R.drawable.enemy0;
-		//enemyBmp[1] = R.drawable.enemy1;
-		//enemyBmp[2] = R.drawable.enemy2;
-		//enemyBmp[3] = R.drawable.enemy3;
-		//enemyBmp[4] = R.drawable.enemy4;
+		//enemySprites[0] = R.drawable.enemy0;
+		//enemySprites[1] = R.drawable.enemy1;
+		//enemySprites[2] = R.drawable.enemy2;
+		//enemySprites[3] = R.drawable.enemy3;
+		//enemySprites[4] = R.drawable.enemy4;
+		//enemySprites[5] = R.drawable.deadfront;
+		//enemySprites[6] = R.drawable.deadback;
+		//enemySprites[7] = R.drawable.deadleft;
+		//enemySprites[8] = R.drawable.deadright;
 	}
+	
 	
 	/**
 	 * Use this method for initial construction of enemies - NOT after the game is resumed.
@@ -40,8 +51,9 @@ public class Enemy {
 	public Enemy (float x,float y,double velx,double vely,boolean flipped)
 	{
 		// TODO TWO LINES of code below once the enemy images have been integrated
-		//Random randNumGen = new Random();
-		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
+		
+		Random randNumGen = new Random();
+		spriteIndex = randNumGen.nextInt(4);
 		
 		//Physics Variables
 		this.x = x;
@@ -68,6 +80,9 @@ public class Enemy {
 		// TODO TWO LINES of code below once the enemy images have been integrated
 		//Random randNumGen = new Random();
 		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
+		
+		Random randNumGen = new Random();
+		spriteIndex = randNumGen.nextInt(4);
 		
 		//Physics Variables
 		this.x = x;
@@ -140,7 +155,40 @@ public class Enemy {
 		Log.d("Hit Method",String.format("Enemy health is now %f",health));
 		if(health<0)
 		{
-			alive=false;		
+			alive=false;
+			setSprite(xFor, yFor);
+			//this.sprite.setBmp(bmp)
+		}
+	}
+	
+	/**
+	 * Set the Sprite when the enemy has DIED
+	 * @param xDir the horizontal component of the direction that the enemy was hit
+	 * @param yDir the vertical component of the direction the the enemy was hit
+	 */
+	public void setSprite(double xDir, double yDir)
+	{
+		if(Math.abs(xDir) >= Math.abs(yDir))	//Attack angle is either to the right or left
+		{
+			if (xDir >= 0)
+			{
+				spriteIndex = DEAD_RIGHT; 
+			}
+			else
+			{ 
+				spriteIndex = DEAD_LEFT; 
+			}
+		}
+		else									//Attack angle is either up or down
+		{
+			if (yDir >= 0)
+			{
+				spriteIndex = DEAD_FRONT;
+			}
+			else
+			{ 
+				spriteIndex = DEAD_BACK;			
+			}
 		}
 	}
 }
