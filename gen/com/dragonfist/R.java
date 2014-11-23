@@ -1082,8 +1082,20 @@ containing a value of this type.
         public static final int b_left=0x7f020059;
         public static final int b_right=0x7f02005a;
         public static final int bruce=0x7f02005b;
-        public static final int enemy=0x7f02005c;
-        public static final int ic_launcher=0x7f02005d;
+        public static final int dead_enemy_downleft=0x7f02005c;
+        public static final int dead_enemy_downright=0x7f02005d;
+        public static final int dead_enemy_left=0x7f02005e;
+        public static final int dead_enemy_right=0x7f02005f;
+        public static final int dead_enemy_upleft=0x7f020060;
+        public static final int dead_enemy_upright=0x7f020061;
+        public static final int dragonfistbackground=0x7f020062;
+        public static final int enemy=0x7f020063;
+        public static final int enemy3=0x7f020064;
+        public static final int enemy4_left=0x7f020065;
+        public static final int enemy4_right=0x7f020066;
+        public static final int enemy5_left=0x7f020067;
+        public static final int enemy5_right=0x7f020068;
+        public static final int ic_launcher=0x7f020069;
     }
     public static final class id {
         public static final int action_bar=0x7f05001c;

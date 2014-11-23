@@ -17,28 +17,38 @@ public class Enemy {
 											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
 	public boolean flipped;			  //If enemy spawns on left, it is not flipped, if on right it is.
 	private int spriteIndex; 
-	public static Sprite sprite;
+	//public static Sprite sprite;
 	private static Sprite enemySprites[];
 	
-	public static final int DEAD_FRONT =  5;
-	public static final int DEAD_BACK = 6;
-	public static int DEAD_LEFT = 7;
-	public static int DEAD_RIGHT = 8;
+	public static final int ENEMY_LEFT = 0;
+	public static final int ENEMY_LEFT2 = 1;
+	public static final int ENEMY_UP = 2;
+	public static final int ENEMY_RIGHT = 3;
+	public static final int ENEMY_RIGHT2 = 4;
+	public static final int DEAD_UP_LEFT = 5;
+	public static final int DEAD_UP_RIGHT = 6;
+	public static final int DEAD_RIGHT = 7;
+	public static final int DEAD_DOWN_RIGHT = 8;
+	public static final int DEAD_DOWN_LEFT = 9;
+	public static final int DEAD_LEFT = 10;
 	
-	static
+	public static void initializeSprites(GameView GV)
 	{
-		enemySprites = new Sprite[9];
-		// TODO add drawable resources to have different looking enemies
-		//enemySprites[0] = R.drawable.enemy0;
-		//enemySprites[1] = R.drawable.enemy1;
-		//enemySprites[2] = R.drawable.enemy2;
-		//enemySprites[3] = R.drawable.enemy3;
-		//enemySprites[4] = R.drawable.enemy4;
-		//enemySprites[5] = R.drawable.deadfront;
-		//enemySprites[6] = R.drawable.deadback;
-		//enemySprites[7] = R.drawable.deadleft;
-		//enemySprites[8] = R.drawable.deadright;
+		enemySprites = new Sprite[11];
+		enemySprites[0] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.enemy4_left)));
+		enemySprites[1] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.enemy5_left)));
+		enemySprites[2] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.enemy3)));
+		enemySprites[3] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.enemy4_right)));
+		enemySprites[4] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.enemy5_right)));
+		enemySprites[5] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_upleft)));
+		enemySprites[6] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_upright)));
+		enemySprites[7] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_right)));
+		enemySprites[8] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_downright)));
+		enemySprites[9] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_downleft)));
+		enemySprites[10] = new Sprite(GameView.scaleFactor(BitmapFactory.decodeResource(GV.getResources(), R.drawable.dead_enemy_left)));
 	}
+	
+	
 	
 	
 	/**
@@ -51,9 +61,30 @@ public class Enemy {
 	public Enemy (float x,float y,double velx,double vely,boolean flipped)
 	{
 		// TODO TWO LINES of code below once the enemy images have been integrated
+		spriteIndex = ENEMY_UP;
+		Random randNumGenerator = new Random();
 		
-		Random randNumGen = new Random();
-		spriteIndex = randNumGen.nextInt(4);
+		if (x > 0 && x < GameView.screenWidth)
+		{
+			spriteIndex = ENEMY_UP;
+		}
+		else
+		{
+			if (x <= 0)
+			{ 
+				if (randNumGenerator.nextInt(2) == 0)
+				{ spriteIndex = ENEMY_LEFT; }
+				else
+				{ spriteIndex = ENEMY_LEFT2; }
+			}
+			else
+			{ 
+				if (randNumGenerator.nextInt(2) == 0)
+				{ spriteIndex = ENEMY_RIGHT; }
+				else
+				{ spriteIndex = ENEMY_RIGHT2; }
+			}
+		}
 		
 		//Physics Variables
 		this.x = x;
@@ -77,12 +108,32 @@ public class Enemy {
 	 */
 	public Enemy (float x,float y,double velx,double vely,boolean flipped, float health, boolean alive, boolean initialized)
 	{
-		// TODO TWO LINES of code below once the enemy images have been integrated
-		//Random randNumGen = new Random();
-		//body = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), enemyBmp[randNumGen.nextInt(enemyBmp.length)]));
 		
-		Random randNumGen = new Random();
-		spriteIndex = randNumGen.nextInt(4);
+		spriteIndex = ENEMY_UP;
+		Random randNumGenerator = new Random();
+		
+		
+		if (velx <= vely)
+		{
+			spriteIndex = ENEMY_UP;
+		}
+		else
+		{
+			if (velx >= 0)
+			{ 
+				if (randNumGenerator.nextInt(2) == 0)
+				{ spriteIndex = ENEMY_LEFT; }
+				else
+				{ spriteIndex = ENEMY_LEFT2; }
+			}
+			else
+			{ 
+				if (randNumGenerator.nextInt(2) == 0)
+				{ spriteIndex = ENEMY_RIGHT; }
+				else
+				{ spriteIndex = ENEMY_RIGHT2; }
+			}
+		}
 		
 		//Physics Variables
 		this.x = x;
@@ -97,6 +148,7 @@ public class Enemy {
 		Log.d("After Resuming Positions", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 
+	
 	public void update(float passedTime)
 	{
 		x += (float)(velx*passedTime);
@@ -107,7 +159,7 @@ public class Enemy {
 	
 	public void Draw(Canvas canvas)
 	{ 
-		sprite.Draw(canvas,x,y,velx,vely,flipped);
+		enemySprites[spriteIndex].Draw(canvas,x,y);//,velx,vely,flipped);
 	}
 	
 	/**
@@ -115,7 +167,7 @@ public class Enemy {
 	 */
 	public float getCenX()
 	{
-		return x+(sprite.getWidth()/2);
+		return x+(getSprite().getWidth()/2);
 	}
 	/**
 	 * 
@@ -124,7 +176,7 @@ public class Enemy {
 	public float getCenY()
 	{
 
-		return y+(sprite.getHeight()/2);
+		return y+(getSprite().getHeight()/2);
 	}
 	
 	/**
@@ -149,17 +201,21 @@ public class Enemy {
 		velx += xFor/mass;
 		vely += yFor/mass;
 		double force = Math.sqrt(Math.pow(xFor,2)+Math.pow(yFor, 2));
+		
 		health -= (force);								//Force is dependent on screen size because of pixel-scaled vectors!
 														//Therefore damage to health should be relative to screen size.
 														//However we already make health relative to initial velocity, which solves this problme.
+		
 		Log.d("Hit Method",String.format("Enemy health is now %f",health));
 		if(health<0)
 		{
 			alive=false;
 			setSprite(xFor, yFor);
-			//this.sprite.setBmp(bmp)
 		}
 	}
+	
+	public Sprite getSprite()
+	{ return enemySprites[spriteIndex];	}
 	
 	/**
 	 * Set the Sprite when the enemy has DIED
@@ -183,11 +239,25 @@ public class Enemy {
 		{
 			if (yDir >= 0)
 			{
-				spriteIndex = DEAD_FRONT;
+				if (xDir >= 0)
+				{
+					spriteIndex = DEAD_DOWN_RIGHT; 
+				}
+				else
+				{ 
+					spriteIndex = DEAD_DOWN_LEFT; 
+				}
 			}
 			else
 			{ 
-				spriteIndex = DEAD_BACK;			
+				if (xDir >= 0)
+				{
+					spriteIndex = DEAD_UP_RIGHT; 
+				}
+				else
+				{ 
+					spriteIndex = DEAD_UP_LEFT; 
+				}		
 			}
 		}
 	}

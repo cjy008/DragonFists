@@ -49,13 +49,8 @@ public class Game extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        /*
-        Button gState = (Button)findViewById(R.id.game_state);
-        if (gState != null)
-        {
-        	gState.setText("Resume");
-        	gState.setVisibility(View.VISIBLE);
-        }*/
+        gameView.pause(false);
+        gameView.stall();
         
         Log.d("onResume","onResume has been called");
     }

@@ -23,8 +23,6 @@ Game
 Art
 	-Main character (Bruce)
 	-Draw treasure box for Bruce to defend.
-	-Put in enemy sprite.
-	-Background
 	-Menu Background and buttons
 
 Menu

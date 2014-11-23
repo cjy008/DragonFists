@@ -27,7 +27,7 @@ public class EnemySpawner {
 		this.gameView = gameView;
 		timeCounter = 0;
 		spawnTime = 0.5f;
-		Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
+		//Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
 	}
 	
 	public boolean increment(float timePassed)

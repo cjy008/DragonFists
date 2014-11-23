@@ -2,14 +2,18 @@ package com.dragonfist;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Button;
 
 public class GameView extends SurfaceView 
@@ -21,6 +25,9 @@ public class GameView extends SurfaceView
     public static int screenWidth;
     public static int screenHeight;
     public static float testAspectRatio = (float)(1280.0/720.0);
+    public static int testWidth = 1280;
+    public static int testHeight = 720;
+    
     public static float aspectSkewFactor;
     public int bufferspace = 40;
     Button stateButton;
@@ -28,11 +35,21 @@ public class GameView extends SurfaceView
     //Logic Variables
     private int taggedIndex;
     private GameView selfReference;
+    private Bitmap background;
+    
     private float startX, startY, currentX, currentY;
     private boolean draggable, lineDrawn;
     private Paint circlePaint;
-    private Paint linePaint;
     private int circleRadius;
+    private Paint linePaint;
+    
+    private Paint rectPaint;
+    private Paint textPaint;
+    private Rect textButton;
+    private boolean textVisible;
+    
+    private String text;
+    
     private boolean punch;				//If the player releases an enemy, punch is set to true, the enemy will get hit, and
     									//draggable will be set to false on the next call to Update().
     
@@ -47,32 +64,21 @@ public class GameView extends SurfaceView
     public GameView(Context context,Bundle savedInstanceState) {
     	super(context);
     	
-    	//Load Bitmap Images
-    	
-    	
-    	/* TODO add drawable resources to account for the different directional strikes
-    	playerRightStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceRightStrike);
-    	playerLeftStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceLeftStrike);
-    	playerFrontStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceFrontStrike);
-    	playerBackStrikeBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bruceBackStrike);
-    	*/
-    	
-    	
     	//Load Android Syntax Variables
     	selfReference = this;
         holder = getHolder();
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
         aspectSkewFactor = ((float)screenWidth/(float)screenHeight)/testAspectRatio;
-        
+                
+        //Load all Bitmap images and create all Sprite objects
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.dragonfistbackground);
+        background = scaleFactor(background);
+        Enemy.initializeSprites(this);
+        player = new Player(this);
+    	
         //Load Game Logic Variables
         numEnemies = 10;
-        
-
-    	player = new Player(this);
-        //player = new Sprite(playerStandingBmp);
-    	//player.setX(screenWidth/2 - player.getHeight()/2);
-    	//player.setY((int)(screenHeight*3.0/4 - player.getHeight()/2.0));
     	
         enemies = new Enemy[numEnemies];
 
@@ -124,6 +130,28 @@ public class GameView extends SurfaceView
         circlePaint.setStrokeWidth(6*((aspectSkewFactor)));
         circlePaint.setColor(Color.CYAN);
         circlePaint.setAlpha((int) 122);	//Half way translucent
+       
+        textPaint = new Paint();
+        textPaint.setARGB(255, 0, 0, 255);
+        textPaint.setTypeface(Typeface.DEFAULT);
+        textPaint.setTextSize(60*screenHeight/testHeight);	//Change the Constant Value to increase/decrease the size of the text
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textVisible = true;
+        text = "Start";
+        textButton = new Rect();
+        
+        
+        //This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
+        textPaint.getTextBounds(text, 0, text.length(), textButton);
+        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+        textButton.bottom += screenHeight/2;
+        textButton.top += screenHeight/2;
+        
+        rectPaint = new Paint();
+        rectPaint.setARGB(255, 255, 255, 51);
+        Log.d("Inner Rectangle", String.format("Rectangle: top: %d, bottom: %d, left: %d, right: %d", textButton.top, textButton.bottom, textButton.left, textButton.right));
+        
         
         //Initialize Start Button
         
@@ -209,13 +237,10 @@ public class GameView extends SurfaceView
 	 * Resize the Bitmap image to account for screen size and width
 	 * @return the new scaled image that accounts for the screen size
 	 */
-	public Bitmap scaleFactor(Bitmap bmp)
+	public static Bitmap scaleFactor(Bitmap bmp)
 	{
-		float thisAspectRatio = ((float)(GameView.screenWidth)/(float)(GameView.screenHeight));
-		//Scale y FIRST!!!
-		float scaleY = GameView.screenWidth/GameView.screenHeight;
-		//Scale the horizontal proportional to the horizontal;
-		float scaleX = (thisAspectRatio/GameView.testAspectRatio)*(bmp.getWidth()*(scaleY/bmp.getHeight()));
+		float scaleY = (float)(GameView.screenHeight)/GameView.testHeight;
+		float scaleX = (float)(GameView.screenWidth)/GameView.testWidth;
 		
 		return Bitmap.createScaledBitmap(bmp, (int)(bmp.getWidth()*scaleX), (int)(bmp.getHeight()*scaleY), false);
 	}
@@ -223,6 +248,8 @@ public class GameView extends SurfaceView
     protected void Draw(Canvas canvas) 
     {
     	canvas.drawColor(Color.BLACK);
+    	canvas.drawBitmap(background, 0, 0, null);
+    	
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
 		
     	player.Draw(canvas);
@@ -242,13 +269,17 @@ public class GameView extends SurfaceView
 	//			Log.d("woohY",Integer.toString(enemies[i].getBody().getY()));
 				enemies[i].Draw(canvas);
 				//canvas.drawBitmap(playerStandingBmp, enemies[i].getBody().getX() , enemies[i].getBody().getY(), null);
-			}
+			}	
 		}
 		if(lineDrawn)
 		{
 			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
 		}
-		stateButton.draw(canvas); 
+		if (textVisible)
+		{
+			canvas.drawRect(textButton, rectPaint);
+			canvas.drawText(text, screenWidth/2, screenHeight/2, textPaint);
+		}
     }
     
 
@@ -264,7 +295,11 @@ public class GameView extends SurfaceView
         {
 	        case MotionEvent.ACTION_DOWN: 
 	        {
-	        	
+	        	if (textVisible)
+	        	{
+	        		textPaint.setARGB(255, 255, 0, 0);
+	        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+	        	}
 	        	//Log.d("aaaa",String.format("Screen Coordinates = (%f,%f)",x,y));
 //	        	startX = x;
 //	        	startY = y;
@@ -278,6 +313,22 @@ public class GameView extends SurfaceView
 	
 	        case MotionEvent.ACTION_MOVE: 
 	        {
+	        	if (textVisible)
+	        	{
+	        		float width = textPaint.measureText(text);
+	        		float height = textPaint.getTextSize();
+	        		if (x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2)
+	        		{ 
+	        			textPaint.setTypeface(Typeface.DEFAULT);
+	        			textPaint.setARGB(255, 0, 0, 255);
+	        		}
+	        		else
+	        		{
+	        			textPaint.setARGB(255, 255, 0, 0);
+		        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+	        		}
+	        			
+	        	}
 	        	if(draggable)
 	        	{
 		        	lineDrawn = true;
@@ -293,6 +344,18 @@ public class GameView extends SurfaceView
 	
 	        case MotionEvent.ACTION_UP: 
 	        {
+	        	if (textVisible)
+	        	{
+	        		float width = textPaint.measureText(text);
+	        		float height = textPaint.getTextSize();
+	        		textPaint.setTypeface(Typeface.DEFAULT);
+        			textPaint.setARGB(255, 0, 0, 255);
+	        		if (!(x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2))
+	        		{
+	        			textVisible = false;
+	        		}
+	        			
+	        	}
 	        	if(draggable)
 	        	{
 		        	punch=true;
@@ -332,14 +395,14 @@ public class GameView extends SurfaceView
     	{
     		if(enemies[i].alive)
     		{
-	    		width = Enemy.sprite.getWidth();
-	    		height = Enemy.sprite.getHeight();
+	    		width = enemies[i].getSprite().getWidth();
+	    		height = enemies[i].getSprite().getHeight();
 
 	    		centerX = enemies[i].x+(width/2);
 	    		centerY = enemies[i].y+(height/2);
 
-	     		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
-	     		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
+	     		//Log.d("brisketbeef2",String.format("centerX: %f", centerX));
+	     		//Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 	//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
 	//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
 	//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
@@ -375,52 +438,55 @@ public class GameView extends SurfaceView
     
 	public void Update(float timePassed)
 	{
-		boolean spawnEnemy = false;
-		
-		timePassed = timePassed/1000;
-		
-		//TODO this slows down time when an enemy is tagged - perhaps make it feel smoother
-		if(draggable)
+		if (!textVisible)
 		{
-			timePassed = timePassed/4; 
-		}
-		
-		//If true, the enemySpawner is signaling for an enemy to be spawned.
-		if (enemySpawner.increment(timePassed))
-		{
-			spawnEnemy = true;		
-		}
-		
-		for(int i=0;i<numEnemies;i++)
-		{
-			if(enemies[i].initialized)
+			boolean spawnEnemy = false;
+			
+			timePassed = timePassed/1000;
+			
+			//TODO this slows down time when an enemy is tagged - perhaps make it feel smoother
+			if(draggable)
 			{
-				enemies[i].update(timePassed);
-				if(i==taggedIndex)
-				{
-					if(draggable)
-					{
-						startX = enemies[i].getCenX();
-						startY = enemies[i].getCenY();
-					}
-					if(punch)
-					{
-						player.hit(enemies[i],(currentX-startX),(currentY-startY));
-						punch=false;
-					}
-				}
-				if((enemies[i].x<0 ||enemies[i].x>screenWidth)&&(enemies[i].y<0||enemies[i].y>screenHeight))
-				{
-					enemies[i].initialized=false;
-				}
+				timePassed = timePassed/4; 
 			}
 			
-			else
+			//If true, the enemySpawner is signaling for an enemy to be spawned.
+			if (enemySpawner.increment(timePassed))
 			{
-				if (spawnEnemy)
+				spawnEnemy = true;		
+			}
+			
+			for(int i=0;i<numEnemies;i++)
+			{
+				if(enemies[i].initialized)
 				{
-					enemies[i]=enemySpawner.initializeEnemy();
-					spawnEnemy = false;
+					enemies[i].update(timePassed);
+					if(i==taggedIndex)
+					{
+						if(draggable)
+						{
+							startX = enemies[i].getCenX();
+							startY = enemies[i].getCenY();
+						}
+						if(punch)
+						{
+							player.hit(enemies[i],(currentX-startX),(currentY-startY));
+							punch=false;
+						}
+					}
+					if((enemies[i].x<0 ||enemies[i].x>screenWidth)&&(enemies[i].y<0||enemies[i].y>screenHeight))
+					{
+						enemies[i].initialized=false;
+					}
+				}
+				
+				else
+				{
+					if (spawnEnemy)
+					{
+						enemies[i]=enemySpawner.initializeEnemy();
+						spawnEnemy = false;
+					}
 				}
 			}
 		}
@@ -435,6 +501,16 @@ public class GameView extends SurfaceView
 	{
 	  float r = a.radius + b.radius;
 	  return r < Distance( a, b );
+	}
+	public void stall() 
+	{
+		if (!textVisible)
+		{
+			text = "Continue";
+	        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+			textVisible = true;
+		}
 	}
 	 
 	/*boolean CirclevsCircleOptimized( Enemy a, Enemy b )

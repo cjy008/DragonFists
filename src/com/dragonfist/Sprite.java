@@ -55,8 +55,11 @@ public class Sprite {
        public void setY(int y) {
     	   this.y = y;
        }
-       public void setBmp(Bitmap bmp) {
+       public void setBmp(Bitmap bmp) 
+       {
     	   this.bmp = bmp;
+    	   width = bmp.getWidth();
+           height = bmp.getHeight();
        }
        public Bitmap getBmp() 
        { return bmp; }
@@ -65,8 +68,13 @@ public class Sprite {
        {
     	   return Bitmap.createBitmap(bmp, x, y, getWidth(), getHeight(), matrix, false);
        }*/
-       public void Draw(Canvas canvas,int x, int y) {
+       public void Draw(Canvas canvas,int x, int y) 
+       {
              canvas.drawBitmap(bmp, x , y, null);
+       }
+       public void Draw(Canvas canvas,float x, float y) 
+       {
+           canvas.drawBitmap(bmp, (int)x , (int)y, null);
        }
        /**
         * 
