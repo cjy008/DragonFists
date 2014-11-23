@@ -5,6 +5,7 @@ Game
 	-Allow dead enemies to kill alive enemies if they collide
 		-If enemies are dead they should kill other enemies and a collision should occur.
 	-Score counter
+		-Display KillCount
 		-Keep a counter that indicates how many enemies that player has defeated
 		-Despawn enemies after off screen.
 			-If they were hit by player AKA if(Enemy.alive == false) then add 1 to score.
@@ -13,20 +14,16 @@ Game
 		-Doesn't crash in any other known cases.
 	-Enemy spawning
 		-Calibrate so game is challenging yet possible to win. 
-			-Perhaps energy calculations with number of enemies per second?				
-	
+			-Perhaps energy calculations with number of enemies per second?
 	-Strength bar
 		-Decrements based off length of line drawn by Snap().
 		-Slowly regenerates.
 		-Draw strength bar!
-	
 Art
 	-Main character (Bruce)
 	-Draw treasure box for Bruce to defend.
 	-Menu Background and buttons
 
 Menu
-	-Start Game button
-		-Starts the actual Game
 	-High Scores
 
