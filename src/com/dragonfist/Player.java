@@ -22,8 +22,10 @@ public class Player
 	private Bitmap playerFrontStrike; // angle of attack from 225 to 135 degrees NoE
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
-	private int killCount;
-	
+
+	public static double strength; // 100 if it is full
+	public int killCount;
+
 	/**
 	 * Constructor that allows the caller to designate the starting location of the player
 	 * @param gameView the View that the player is created in
@@ -40,6 +42,7 @@ public class Player
 		playerFrontStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_front));
 		playerBackStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_back));
 		killCount = 0;
+		strength = 100;
 	}
 	/**
 	 * Player is initialized by default 1/2 way along the screen horizontally and 3/4th down vertically
@@ -59,6 +62,7 @@ public class Player
 		y = ((int)(gameView.screenHeight*3.0/4.0 - body.getHeight()/2.0));
 		
 		killCount = 0;
+		strength = 100;
 	}
 	
 	public void update()
@@ -125,6 +129,16 @@ public class Player
 		
 		enemy.hit(xDir, yDir);
 		killCount += 1;
+		
+		//To reduce the strength
+		int reduceStrengthVariable = 4; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
+		double strengthUsed = Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2)) / GameView.screenWidth /reduceStrengthVariable *100;
+		Log.d("strengthUsed", String.valueOf(strengthUsed));
+		if (strengthUsed > strength){
+			strength = 0;
+		}else{
+			strength -= strengthUsed;
+		}
 	}
 	
 }

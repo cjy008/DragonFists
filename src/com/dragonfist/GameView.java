@@ -10,11 +10,14 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 public class GameView extends SurfaceView 
 {
@@ -45,8 +48,16 @@ public class GameView extends SurfaceView
     
     private Paint rectPaint;
     private Paint textPaint;
+    private Paint paint;
     private Rect textButton;
     private boolean textVisible;
+    
+    private Rect strengthBackground;
+    private Rect strengthBar;
+    private Paint strengthBackPaint;
+    private Paint strengthBarPaint;
+    private double remainingStrength; // strength adjusted to the screen dimensions
+    private boolean isPaused;
     
     private String text;
     
@@ -77,6 +88,28 @@ public class GameView extends SurfaceView
         Enemy.initializeSprites(this);
         player = new Player(this);
     	
+        // Strength bar
+        remainingStrength = (screenWidth - screenWidth/25*2)* (player.strength)/100;
+        
+        strengthBackground = new Rect();
+        strengthBackground.left = (int) (screenWidth/25);
+        strengthBackground.right = (int) (screenWidth - screenWidth/25);
+        strengthBackground.top = (int)(screenHeight*7/8);
+        strengthBackground.bottom = (screenHeight- screenHeight/15);
+        
+        strengthBar = new Rect();
+        strengthBar.left = (int) (screenWidth/25);
+        strengthBar.right = (int) (screenWidth/25 + remainingStrength);
+        strengthBar.bottom = (screenHeight- screenHeight/15);
+        strengthBar.top =(int)(screenHeight*7/8);
+        
+        strengthBackPaint = new Paint ();
+        strengthBackPaint.setARGB(128, 150, 150, 150);
+        
+        strengthBarPaint = new Paint();
+        strengthBarPaint.setARGB(200, 100, 200, 100);
+        isPaused = false;
+        
         //Load Game Logic Variables
         numEnemies = 10;
     	
@@ -134,12 +167,21 @@ public class GameView extends SurfaceView
         textPaint = new Paint();
         textPaint.setARGB(255, 0, 0, 255);
         textPaint.setTypeface(Typeface.DEFAULT);
+        textPaint.setAntiAlias(true);
         textPaint.setTextSize(60*screenHeight/testHeight);	//Change the Constant Value to increase/decrease the size of the text
         textPaint.setTextAlign(Paint.Align.CENTER);
+ 
         textVisible = true;
         text = "Start";
         textButton = new Rect();
         
+    	//Initialization of paint for Score Counter
+        paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+        paint.setAntiAlias(true);
+        float textSize = paint.getTextSize();
+        paint.setTextSize(textSize*3);
         
         //This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
         textPaint.getTextBounds(text, 0, text.length(), textButton);
@@ -155,8 +197,9 @@ public class GameView extends SurfaceView
         
         //Initialize Start Button
         
-        stateButton = new Button(this.getContext());
-        stateButton.setText("Start");
+        stateButton = new Button(getContext());
+        
+        
     	stateButton.setX(screenWidth/2 - stateButton.getWidth()/2);
     	stateButton.setY(screenWidth/2 - stateButton.getWidth()/2);
         stateButton.setVisibility(Button.VISIBLE);
@@ -233,6 +276,22 @@ public class GameView extends SurfaceView
       // etc.
     }
     
+    private void updateStrength(){
+    	if (isPaused == false){
+	    	if (player.strength > 0 && player.strength <100){
+	    		player.strength += 0.1; 
+	    	}
+	    }
+    	remainingStrength = (screenWidth - screenWidth/25*2)* (player.strength)/100;
+    	strengthBar.right = (int) (screenWidth/25 + remainingStrength);
+    	
+    	if (player.strength < 20){
+        strengthBarPaint.setARGB(200, 200, 100, 100);}
+    	
+    	if (player.strength > 20){
+        strengthBarPaint.setARGB(200, 100, 200, 100);}
+    }
+    
     /**
 	 * Resize the Bitmap image to account for screen size and width
 	 * @return the new scaled image that accounts for the screen size
@@ -249,6 +308,16 @@ public class GameView extends SurfaceView
     {
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
+    	updateStrength();
+    	canvas.drawRect(strengthBackground, strengthBackPaint);
+    	canvas.drawRect(strengthBar, strengthBarPaint);
+    	
+    	//Score Counter Display
+
+        int textPosWidth = (screenWidth)-200;
+        int textPosHeight = (screenHeight)-50;
+        canvas.drawText("Score: "+ player.killCount, textPosWidth, textPosHeight, paint);
+
     	
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
 		
@@ -433,6 +502,7 @@ public class GameView extends SurfaceView
     	if(GT!=null)
     	{
     		GT.pause(paused);
+    		isPaused = paused;
     	}
     }
     
@@ -528,18 +598,9 @@ public class GameView extends SurfaceView
 	        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
 	        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
 			textVisible = true;
+			
 		}
 	}
-	 
-	/*boolean CirclevsCircleOptimized( Enemy a, Enemy b )
-	{
-	  float r = a.radius + b.radius;
-	  r *= r;
-	  return r < (a.x + b.x)^2 + (a.y + b.y)^2;
-	}*/
 	
-	/*public static void main(String[] args){
-		GameView test = new GameView();
-	}
-	*/
+	
 }
