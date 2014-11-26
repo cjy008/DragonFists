@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -45,6 +46,7 @@ public class GameView extends SurfaceView
     
     private Paint rectPaint;
     private Paint textPaint;
+    private Paint paint;
     private Rect textButton;
     private boolean textVisible;
     
@@ -134,12 +136,21 @@ public class GameView extends SurfaceView
         textPaint = new Paint();
         textPaint.setARGB(255, 0, 0, 255);
         textPaint.setTypeface(Typeface.DEFAULT);
+        textPaint.setAntiAlias(true);
         textPaint.setTextSize(60*screenHeight/testHeight);	//Change the Constant Value to increase/decrease the size of the text
         textPaint.setTextAlign(Paint.Align.CENTER);
+ 
         textVisible = true;
         text = "Start";
         textButton = new Rect();
         
+    	//Initialization of paint for Score Counter
+        paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+        paint.setAntiAlias(true);
+        float textSize = paint.getTextSize();
+        paint.setTextSize(textSize*3);
         
         //This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
         textPaint.getTextBounds(text, 0, text.length(), textButton);
@@ -155,8 +166,9 @@ public class GameView extends SurfaceView
         
         //Initialize Start Button
         
-        stateButton = new Button(this.getContext());
-        stateButton.setText("Start");
+        stateButton = new Button(getContext());
+        
+        
     	stateButton.setX(screenWidth/2 - stateButton.getWidth()/2);
     	stateButton.setY(screenWidth/2 - stateButton.getWidth()/2);
         stateButton.setVisibility(Button.VISIBLE);
@@ -249,6 +261,13 @@ public class GameView extends SurfaceView
     {
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
+    	
+    	//Score Counter Display
+
+        int textPosWidth = (screenWidth)-200;
+        int textPosHeight = (screenHeight)-50;
+        canvas.drawText("Score: "+ player.killCount, textPosWidth, textPosHeight, paint);
+
     	
 		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
 		

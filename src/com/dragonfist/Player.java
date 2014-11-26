@@ -22,7 +22,7 @@ public class Player
 	private Bitmap playerFrontStrike; // angle of attack from 225 to 135 degrees NoE
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
-	private int killCount;
+	public int killCount;
 	
 	/**
 	 * Constructor that allows the caller to designate the starting location of the player
