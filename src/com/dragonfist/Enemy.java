@@ -5,6 +5,7 @@ import java.util.Random;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.Log;
 
@@ -260,5 +261,81 @@ public class Enemy {
 				}		
 			}
 		}
+	}
+	
+	public boolean isCollision(float x, float y)
+	{
+		if(x<(enemySprites[this.spriteIndex].getWidth()+this.x))
+			{
+				//Log.d("Zeta Test",String.format("enemySprites[this.spriteIndex].getWidth()+this.x: %f",(enemySprites[this.spriteIndex].getWidth()+this.x)));
+				if(x>this.x)
+				{
+				//	Log.d("Zeta Test", String.format("this.x: %f",this.x));
+					if(y<(enemySprites[this.spriteIndex].getHeight()+this.y))
+					{
+						if(y>this.y)
+						{
+
+							Log.d("Succesful Collision","Succesful Collision");
+							return true;
+						}
+					}
+				}
+			}
+		return false;
+	}
+	
+//	public collision(Enemy enemy){
+//		double scalar1 = (Math.pow(this.velx, 2)+Math.pow(this.vely, 2));
+//		double scalar2 = (Math.pow(enemy.velx, 2)+Math.pow(enemy.vely, 2));
+//		double energy1 = 0.5*(scalar1);
+//		double energy2 = 0.5*(scalar2);
+//		double mom1x = this.velx;
+//		double mom1y = this.vely;
+//		double mom2x = enemy.velx;
+//		double mom2y = enemy.vely;
+////		energy1+energy2 = energyFinal = finalEn1+finalEn2;
+////		mom1x+mom2x = momXFinal = finalXVel1+finalXVel2;
+////		mom1y+mom2y = momYFinal = finalYVel1+finalYVel2;
+//	}
+	
+	public Vector2 getPosVector(){
+		return new Vector2(x,y);
+	}
+	
+	public Vector2 getVelVector(){
+		return new Vector2((float)velx,(float)vely);
+	}
+	
+	//http://gamedev.stackexchange.com/questions/7862/is-there-an-algorithm-for-a-pool-game
+	public void collision(Enemy enemy)
+	{
+		Vector2 posVector = getPosVector();
+		Vector2 velVector = getVelVector();
+		Vector2 otherPosVector = enemy.getPosVector();
+		Vector2 otherVelVector = enemy.getVelVector();
+		
+	    Vector2 delta = (posVector.subtract(otherPosVector));
+	    double d = delta.length();
+	    delta.divide((float)d);
+	    Vector2 normal = new Vector2(delta);
+
+	    Vector2 velocityDelta = posVector.subtract(otherPosVector);
+
+	    float dot = velocityDelta.dotProduct(normal);
+	    
+	    if (dot > 0) {
+	        float coefficient = 0.5f;
+	        float impulseStrength = (1 + coefficient) * dot;
+	        Vector2 impulse = new Vector2(normal);
+	        impulse.multiply(impulseStrength);
+	        
+	        this.hit(impulse.x,impulse.y);
+	        
+	        Vector2 otherEndVel = otherVelVector.subtract(impulse);
+	        enemy.velx = otherEndVel.x;
+	        enemy.vely = otherEndVel.y;
+	    }
+
 	}
 }

@@ -478,6 +478,24 @@ public class GameView extends SurfaceView
 					{
 						enemies[i].initialized=false;
 					}
+				
+					if(!enemies[i].alive)
+					{
+						for(int j=0; j<numEnemies;j++)
+						{
+							if(i!=j)
+							{	
+								if(enemies[j].alive)
+								{
+									if(enemies[j].isCollision(enemies[i].x,enemies[i].y))
+									{
+										Log.d("Succesful collision!","Succesful collision!");
+										enemies[j].collision(enemies[i]);
+									}
+								}
+							}
+						}
+					}
 				}
 				
 				else

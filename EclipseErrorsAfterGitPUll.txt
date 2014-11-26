@@ -1,0 +1,11 @@
+If you get an app-compat-v7 or app-compat-v4 error in your Eclipse workspace, you have to rebuild your build path and/or your Android imports.
+
+-Right click your project and hit "Build Path"  and remove any libraries that look like "app-compat-v7"
+
+	-Then right click project -> properties -> android remove the current appcompat library at the bottom of the screen
+
+	-Hit add in the bottom right corner of the window and add the only available option, if there are two try one and if that fails try the other.
+
+	-Go to the top of Eclipse and hit Project -> Clean
+
+	-If project still does not run then restart Eclipse and it should run smoothly
