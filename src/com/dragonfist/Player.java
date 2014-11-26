@@ -23,7 +23,7 @@ public class Player
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
 
-	static double strength; // 100 if it is full
+	public static double strength; // 100 if it is full
 	public int killCount;
 
 	/**

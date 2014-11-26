@@ -277,7 +277,7 @@ public class GameView extends SurfaceView
     }
     
     private void updateStrength(){
-    	if (isPaused = false){
+    	if (isPaused == false){
 	    	if (player.strength > 0 && player.strength <100){
 	    		player.strength += 0.1; 
 	    	}
