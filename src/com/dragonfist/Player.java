@@ -22,9 +22,10 @@ public class Player
 	private Bitmap playerFrontStrike; // angle of attack from 225 to 135 degrees NoE
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
+
 	static double strength; // 100 if it is full
-	private int killCount;
-	
+	public int killCount;
+
 	/**
 	 * Constructor that allows the caller to designate the starting location of the player
 	 * @param gameView the View that the player is created in
