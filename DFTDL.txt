@@ -2,11 +2,11 @@ Game
 	-Edit Player attack feature!
 		-Player should return to initial position after a set amount of time
 		-Calibrate so it feels more natural
-	-Allow dead enemies to kill alive enemies if they collide
-		-If enemies are dead they should kill other enemies and a collision should occur.
+	-Enemy Collisions
+		-Fix Collision detection - currently way off 
+		-Perhaps fix collisions? Make them less elastic? Or make them unrealistic?
 	-Score counter
-		-Display KillCount
-		-Keep a counter that indicates how many enemies that player has defeated
+		-Currently does not add to score if they have died because of collisions.
 		-Despawn enemies after off screen.
 			-If they were hit by player AKA if(Enemy.alive == false) then add 1 to score.
 	-OnPause
