@@ -555,9 +555,13 @@ public class GameView extends SurfaceView
 						{
 							if(i!=j)
 							{	
+								float halfSpriteWidth;
+								float halfSpriteHeight;
 								if(enemies[j].alive)
 								{
-									if(enemies[j].isCollision(enemies[i].x,enemies[i].y))
+									halfSpriteWidth = enemies[i].getSprite().getWidth()/2;
+									halfSpriteHeight = enemies[i].getSprite().getHeight()/2;
+									if(enemies[j].isCollision(enemies[i].x-halfSpriteWidth,enemies[i].x+halfSpriteWidth,enemies[i].y-halfSpriteHeight, enemies[i].y+halfSpriteHeight))
 									{
 										Log.d("Succesful collision!","Succesful collision!");
 										enemies[j].collision(enemies[i]);

@@ -24,7 +24,7 @@ public class Player
 	
 
 	public static double strength; // 100 if it is full
-	public int killCount;
+	public static int killCount;
 
 	/**
 	 * Constructor that allows the caller to designate the starting location of the player
@@ -128,10 +128,9 @@ public class Player
 		}
 		
 		enemy.hit(xDir, yDir);
-		killCount += 1;
 		
 		//To reduce the strength
-		int reduceStrengthVariable = 4; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
+		int reduceStrengthVariable = 1; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
 		double strengthUsed = Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2)) / GameView.screenWidth /reduceStrengthVariable *100;
 		Log.d("strengthUsed", String.valueOf(strengthUsed));
 		if (strengthUsed > strength){

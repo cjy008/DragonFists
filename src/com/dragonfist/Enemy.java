@@ -211,6 +211,8 @@ public class Enemy {
 		if(health<0)
 		{
 			alive=false;
+
+			Player.killCount += 1;
 			setSprite(xFor, yFor);
 		}
 	}
@@ -263,17 +265,19 @@ public class Enemy {
 		}
 	}
 	
-	public boolean isCollision(float x, float y)
+	public boolean isCollision(float otherX1, float otherX2, float otherY1, float otherY2)
 	{
-		if(x<(enemySprites[this.spriteIndex].getWidth()+this.x))
+		float halfSpriteWidth = enemySprites[this.spriteIndex].getWidth()/2;
+		float halfSpriteHeight = enemySprites[this.spriteIndex].getHeight()/2;
+		if(otherX1<(halfSpriteWidth+this.x))
 			{
 				//Log.d("Zeta Test",String.format("enemySprites[this.spriteIndex].getWidth()+this.x: %f",(enemySprites[this.spriteIndex].getWidth()+this.x)));
-				if(x>this.x)
+				if(otherX2>this.x-halfSpriteWidth)
 				{
 				//	Log.d("Zeta Test", String.format("this.x: %f",this.x));
-					if(y<(enemySprites[this.spriteIndex].getHeight()+this.y))
+					if(otherY1<(halfSpriteHeight+this.y))
 					{
-						if(y>this.y)
+						if(otherY2>this.y-halfSpriteHeight)
 						{
 
 							Log.d("Succesful Collision","Succesful Collision");
@@ -325,7 +329,7 @@ public class Enemy {
 	    float dot = velocityDelta.dotProduct(normal);
 	    
 	    if (dot > 0) {
-	        float coefficient = 0.5f;
+	        float coefficient = 0.2f;
 	        float impulseStrength = (1 + coefficient) * dot;
 	        Vector2 impulse = new Vector2(normal);
 	        impulse.multiply(impulseStrength);
