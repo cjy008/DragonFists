@@ -1,11 +1,19 @@
 package com.dragonfist;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -30,6 +38,8 @@ public class GameView extends SurfaceView
     public static float testAspectRatio = (float)(1280.0/720.0);
     public static int testWidth = 1280;
     public static int testHeight = 720;
+    public static int highScore;
+    public static final String saveFileName = "HighScore.txt";
     
     public static float aspectSkewFactor;
     public int bufferspace = 40;
@@ -49,6 +59,11 @@ public class GameView extends SurfaceView
     private int scoreTextYPos;
     private Paint scorePaint;
     
+    private boolean gameOver;
+    private String highScoreText;
+    private Paint highScorePaint;
+    private int highScoreXPos;
+    private int highScoreYPos;
     
     private Paint rectPaint;
     private Paint textPaint;
@@ -82,7 +97,7 @@ public class GameView extends SurfaceView
 
     public GameView(Context context,Bundle savedInstanceState) {
     	super(context);
-    	
+    	gameOver = false;
     	//Load Android Syntax Variables
     	selfReference = this;
         holder = getHolder();
@@ -179,6 +194,17 @@ public class GameView extends SurfaceView
         treasureYPos = (float) (screenHeight*3/4.0 - treasure.getHeight()/2.0);
         treasurePaint = new Paint();
         
+        highScoreText = "";
+        highScorePaint = new Paint();
+        //highScorePaint.setColor(Color.WHITE);
+        highScorePaint.setARGB(255, 00, 200, 00);
+        highScorePaint.setTypeface(Typeface.DEFAULT_BOLD);
+        highScorePaint.setTextSize(100*screenHeight/testHeight);
+        highScorePaint.setTextAlign(Align.CENTER);
+        highScoreXPos = screenWidth/2;
+        highScoreYPos = (int)highScorePaint.getTextSize();
+        
+        
         
         if(savedInstanceState==null)
         {
@@ -199,13 +225,13 @@ public class GameView extends SurfaceView
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i].initialized = false;
-	        }    */
 
+	        }    */
         }        
         else        	
         {
-        	 // TODO Once we implement player strength: player.strength = savedInstanceState.getDouble("playerStrength", playerStrength);	        	 
-        	 // TODO Once we have a score counter: score = savedInstanceState.getInt("score");      	
+        	player.strength = savedInstanceState.getDouble("playerStrength", player.maxStrength);
+        	player.killCount = savedInstanceState.getInt("score");      	
           	player.x = savedInstanceState.getInt("playerX", player.x);
           	player.y = savedInstanceState.getInt("playerY", player.y);
           	for(int i=0;i<numEnemies;i++)
@@ -273,6 +299,9 @@ public class GameView extends SurfaceView
       // killed and restarted.
       for(int i=0; i<numEnemies;i++)
       {	
+    	  savedInstanceState.putDouble("playerStrength", player.strength);
+    	  savedInstanceState.putInt("score", Player.killCount);
+    	  savedInstanceState.putInt("highScore", highScore);
     	  savedInstanceState.putFloat(String.format("enemyX%d",i), enemies[i].x);
     	  savedInstanceState.putFloat(String.format("enemyY%d",i), enemies[i].y);
     	  savedInstanceState.putDouble(String.format("enemyVelX%d",i), enemies[i].velx);
@@ -326,14 +355,12 @@ public class GameView extends SurfaceView
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
     	
-        canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
+        
         
         canvas.drawBitmap(treasure, treasureXPos, treasureYPos, treasurePaint);
     	
     	player.Draw(canvas);
     	
-    	canvas.drawRect(strengthBackground, strengthBackPaint);
-    	canvas.drawRect(strengthBar, strengthBarPaint);
     	
     	//Score Counter Display
         
@@ -357,6 +384,13 @@ public class GameView extends SurfaceView
 			canvas.drawRect(textButton, rectPaint);
 			canvas.drawText(text, screenWidth/2, screenHeight/2, textPaint);
 		}
+		
+		//HUD elements: strength bar and score
+		canvas.drawRect(strengthBackground, strengthBackPaint);
+    	canvas.drawRect(strengthBar, strengthBarPaint);
+    	canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
+    	if (gameOver)
+    	{ canvas.drawText(highScoreText, highScoreXPos, highScoreYPos, highScorePaint); }
     }
     
 
@@ -374,8 +408,22 @@ public class GameView extends SurfaceView
 	        {
 	        	if (textVisible)
 	        	{
-	        		textPaint.setARGB(255, 255, 0, 0);
-	        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+	        		if (gameOver) { text = "Start"; }
+	        		float width = textPaint.measureText(text);
+	        		float height = textPaint.getTextSize();
+	        		if (!(x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2))
+	        		{ 
+		        		textPaint.setARGB(255, 255, 0, 0);
+		        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		        		
+		        		textPaint.getTextBounds(text, 0, text.length(), textButton);
+        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+        		        textButton.bottom += screenHeight/2;
+        		        textButton.top += screenHeight/2;
+	        		}
+	        		else
+	        		{ if (gameOver) {text = "Game Over"; } }
 	        	}
 	        	//Log.d("aaaa",String.format("Screen Coordinates = (%f,%f)",x,y));
 //	        	startX = x;
@@ -392,19 +440,41 @@ public class GameView extends SurfaceView
 	        {
 	        	if (textVisible)
 	        	{
+	        		if (gameOver) { text = "Start"; }
+	        		
 	        		float width = textPaint.measureText(text);
 	        		float height = textPaint.getTextSize();
 	        		if (x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2)
 	        		{ 
 	        			textPaint.setTypeface(Typeface.DEFAULT);
 	        			textPaint.setARGB(255, 0, 0, 255);
+	        			if (gameOver)
+	        			{
+	        				//This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
+	        				text = "Game Over";
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+	        			}
 	        		}
 	        		else
 	        		{
 	        			textPaint.setARGB(255, 255, 0, 0);
 		        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		        		if (gameOver)
+		        		{
+		        			text = "Start";
+
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+		        		}
 	        		}
-	        			
+	        		
 	        	}
 	        	if(draggable)
 	        	{
@@ -474,6 +544,23 @@ public class GameView extends SurfaceView
 	        		if (!(x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2))
 	        		{
 	        			textVisible = false;
+	        			if (gameOver)
+	        			{ 
+	        				gameOver = false;
+	        				restart();
+	        			}
+	        		}
+	        		else
+	        		{
+	        			if (gameOver)
+	        			{
+	        				text = "Game Over";
+	        				textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+	        			}
 	        		}
 	        			
 	        	}
@@ -501,6 +588,28 @@ public class GameView extends SurfaceView
     }
     
     /**
+     * Called when the GameOver button is clicked: Reinitialize enemies
+     */
+    private void restart() 
+    {
+    	player.strength = player.maxStrength;
+    	player.killCount = 0;
+    	text = "Start";
+		// TODO Auto-generated method stub
+    	for(int i=0;i<numEnemies;i++)
+        {
+        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	enemies[i] = enemySpawner.initializeEnemy();
+        }
+    	for(int i=0;i<4;i++)
+        {
+        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	enemies[i].initialized = false;
+        }
+	}
+	/**
      * Description: Round the inital player snap to the center of the closest enemy
      * @param x the horizontal coordinate of the initial tap point
      * @param y the vertical coordinate of the initial tap point
@@ -622,6 +731,50 @@ public class GameView extends SurfaceView
 									}
 								}
 							}
+						}
+					}
+					else
+					{
+						if (enemies[i].isCollision(treasureXPos, treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()))
+						{
+							
+							Log.d("AAAAAA", String.format("Enemy: left: %f; right: %f; up: %f, down: %f", enemies[i].getPosVector().x, enemies[i].getPosVector().x + enemies[i].getSprite().getWidth(), enemies[i].getPosVector().y, enemies[i].getPosVector().y + enemies[i].getSprite().getHeight()));
+							Log.d("AAAAAA", String.format("Treasure: left: %f; right: %f; up: %f, down: %f", treasureXPos, + treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()));
+							Log.d("AAAAAA", String.format("screenWidth: %d; screenHeight: %d", screenWidth, screenHeight));
+							text = "Game Over";
+							gameOver = true;
+							textVisible = true;
+							
+							textVisible = true;
+							
+							text = "Game Over";
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+	        		        
+	        		        if (player.killCount > highScore)
+	        		        {
+		        		        
+								try 
+								{
+									File file = new File(getContext().getFilesDir(), GameView.saveFileName);
+									FileOutputStream FOS = new FileOutputStream(file);
+									FOS.write(player.killCount);
+									FOS.close();
+									Log.d("HIGH SCORE STUFF!!!!", "highsocre.txt successfully written");
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									Log.e("URGENT", "File Write Error: IO Exception");
+								}
+								
+								highScoreText = String.format("NEW HIGH SCORE: %d", player.killCount);
+								highScore = player.killCount;
+	        		        }
+	        		        else
+	        		        { highScoreText = String.format("HIGH SCORE: %d", highScore); }
 						}
 					}
 				}

@@ -4,18 +4,15 @@ Game
 	-Player attacks
 		-Player can't attack with no strength!
 
-	-OnPause
-		-Crashes on return button.
-		-Doesn't crash in any other known cases.
 		
 	-Enemy spawning
 		-Calibrate so game is challenging yet possible to win. 
 			-Perhaps energy calculations with number of enemies per second?
-	
-	-Treasure box
-		-Draw treasure box for Bruce to defend.
-		-Cause game over and game restart after game.
 
+	-Player attacks (Optional)
+		-Edit Player attack feature!
+		-Player should return to initial position after a set amount of time
+		-Calibrate so hit feels more natural
 		
 	-Combos!
 		-Multiple collisions = bonus points;
