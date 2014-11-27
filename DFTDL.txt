@@ -8,22 +8,21 @@ Game
 	-OnPause
 		-Crashes on return button.
 		-Doesn't crash in any other known cases.
+		
 	-Enemy spawning
 		-Calibrate so game is challenging yet possible to win. 
 			-Perhaps energy calculations with number of enemies per second?
-	-Strength bar
-		-When Strength hits zero sometimes it just disappears forever now
-		-Increase regen rate because the amount it decreases by on hit is larger now.
-		-Slow down regen rate during bullet time.
 	
-	-Art
-		-Main character (Bruce)
+	-Treasure box
 		-Draw treasure box for Bruce to defend.
-		-Menu Background and buttons
-		
-		
-	-Edit Player attack feature!
+		-Cause game over and game restart after game.
+	
+	-Player attacks (Optional)
+		-Edit Player attack feature!
 		-Player should return to initial position after a set amount of time
-		-Calibrate so it feels more natural
+		-Calibrate so qit feels more natural
+		
+	-Combos!
+		-Multiple collisions = bonus points;
 	-Menu
 	-High Scores

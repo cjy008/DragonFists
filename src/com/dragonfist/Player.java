@@ -137,11 +137,12 @@ public class Player
 		int reduceStrengthVariable = 1; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
 		double strengthUsed = Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2)) / GameView.screenWidth /reduceStrengthVariable *100;
 		Log.d("strengthUsed", String.valueOf(strengthUsed));
-		if (strengthUsed > strength){
+		if (strengthUsed >= strength){
 			strength = 0;
 		}else{
 			strength -= strengthUsed;
 		}
+		Log.d("strengthTest",String.format("strength: %f",strength));
 	}
 	
 }

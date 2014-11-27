@@ -199,6 +199,8 @@ public class Enemy {
 		double mass = 1.0; //TODO 
 						   //OPTIONAL: This just changes how powerful the hits are. Can give this attribute to enemies
 					  	   //if we want enemies with different weights.
+		velx /= 2;
+		vely /= 2;
 		velx += xFor/mass;
 		vely += yFor/mass;
 		double force = Math.sqrt(Math.pow(xFor,2)+Math.pow(yFor, 2));
@@ -267,8 +269,8 @@ public class Enemy {
 	
 	public boolean isCollision(float otherX1, float otherX2, float otherY1, float otherY2)
 	{
-		float halfSpriteWidth = enemySprites[this.spriteIndex].getWidth()/2;
-		float halfSpriteHeight = enemySprites[this.spriteIndex].getHeight()/2;
+		float halfSpriteWidth = enemySprites[this.spriteIndex].getWidth()/4;
+		float halfSpriteHeight = enemySprites[this.spriteIndex].getHeight()/4;
 		if(otherX1<(halfSpriteWidth+this.x))
 			{
 				//Log.d("Zeta Test",String.format("enemySprites[this.spriteIndex].getWidth()+this.x: %f",(enemySprites[this.spriteIndex].getWidth()+this.x)));
@@ -329,7 +331,7 @@ public class Enemy {
 	    float dot = velocityDelta.dotProduct(normal);
 	    
 	    if (dot > 0) {
-	        float coefficient = 0.2f;
+	        float coefficient = 0.25f;	//This was originally .5f - in the given code
 	        float impulseStrength = (1 + coefficient) * dot;
 	        Vector2 impulse = new Vector2(normal);
 	        impulse.multiply(impulseStrength);
