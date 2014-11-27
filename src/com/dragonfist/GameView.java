@@ -1,5 +1,6 @@
 package com.dragonfist;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -727,7 +728,8 @@ public class GameView extends SurfaceView
 		        		        
 								try 
 								{
-									FileOutputStream FOS = new FileOutputStream(GameView.saveFileName);
+									File file = new File(getContext().getFilesDir(), GameView.saveFileName);
+									FileOutputStream FOS = new FileOutputStream(file);
 									FOS.write(player.killCount);
 									FOS.close();
 									Log.d("HIGH SCORE STUFF!!!!", "highsocre.txt successfully written");

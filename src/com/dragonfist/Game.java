@@ -29,7 +29,8 @@ public class Game extends Activity {
         setContentView(gameView = new GameView(this,savedInstanceState));
         try 
         {
-			FileReader FR = new FileReader(GameView.saveFileName);
+        	File file = new File(getFilesDir(), GameView.saveFileName);
+			FileReader FR = new FileReader(file);
 			char[] buffer = new char[10];
 			if (FR.ready()) 
 			{  
@@ -37,6 +38,7 @@ public class Game extends Activity {
 				for (int i = length - 1; i >= 0; i--)
 				{
 					GameView.highScore += buffer[i]*Math.pow(10, length - 1 - i);
+					Log.d("HIGH SCORE STUFF!!!!", String.format("High Score retrieved in onCreate with a value of %d", GameView.highScore));
 				}
 			}
 			FR.close();
@@ -51,10 +53,11 @@ public class Game extends Activity {
         Log.d("onStart","onStart has been called");
         Scanner sc;
 		try {
-			sc = new Scanner(new File(GameView.saveFileName));
+			sc = new Scanner(new File(getFilesDir(), GameView.saveFileName));
 			if (sc.hasNextInt())
 	        {
 	        	GameView.highScore = sc.nextInt();
+	        	Log.d("HIGH SCORE STUFF!!!!", String.format("High Score retrieved in onCreate with a value of %d", GameView.highScore));
 	        }
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
