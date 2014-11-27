@@ -1,7 +1,5 @@
 Game
-	-Edit Player attack feature!
-		-Player should return to initial position after a set amount of time
-		-Calibrate so it feels more natural
+	
 	-Enemy Collisions
 		-Perhaps fix collisions? Make them less elastic? Or make them unrealistic?
 		-Enemies should only be able to collide once.
@@ -18,11 +16,16 @@ Game
 		-When Strength hits zero sometimes it just disappears forever now
 		-Increase regen rate because the amount it decreases by on hit is larger now.
 		-Slow down regen rate during bullet time.
+	
 	-Art
 		-Main character (Bruce)
 		-Draw treasure box for Bruce to defend.
 		-Menu Background and buttons
-	
+		
+		
+	-Edit Player attack feature!
+		-Player should return to initial position after a set amount of time
+		-Calibrate so it feels more natural
 	-Menu
 	-High Scores
 
