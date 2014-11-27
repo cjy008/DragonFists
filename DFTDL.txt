@@ -3,23 +3,15 @@ Game
 		-Enemies should only be able to collide before fading
 	
 	-Despawn enemies after off screen more efficiently - sometimes they run into enemies off screen!
-	
-	-OnPause
-		-Crashes on return button.
-		-Doesn't crash in any other known cases.
 		
 	-Enemy spawning
 		-Calibrate so game is challenging yet possible to win. 
 			-Perhaps energy calculations with number of enemies per second?
 	
-	-Treasure box
-		-Draw treasure box for Bruce to defend.
-		-Cause game over and game restart after game.
-	
 	-Player attacks (Optional)
 		-Edit Player attack feature!
 		-Player should return to initial position after a set amount of time
-		-Calibrate so qit feels more natural
+		-Calibrate so hit feels more natural
 		
 	-Combos!
 		-Multiple collisions = bonus points;
