@@ -1,5 +1,4 @@
 Game
-	
 	-Enemy Collisions
 		-Perhaps fix collisions? Make them less elastic? Or make them unrealistic?
 		-Enemies should only be able to collide once.
@@ -28,4 +27,3 @@ Game
 		-Calibrate so it feels more natural
 	-Menu
 	-High Scores
-

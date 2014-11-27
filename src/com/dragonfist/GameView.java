@@ -33,7 +33,6 @@ public class GameView extends SurfaceView
     
     public static float aspectSkewFactor;
     public int bufferspace = 40;
-    Button stateButton;
     
     //Logic Variables
     private int taggedIndex;
@@ -46,9 +45,13 @@ public class GameView extends SurfaceView
     private int circleRadius;
     private Paint linePaint;
     
+    private int scoreTextXPos;
+    private int scoreTextYPos;
+    private Paint scorePaint;
+    
+    
     private Paint rectPaint;
     private Paint textPaint;
-    private Paint paint;
     private Rect textButton;
     private boolean textVisible;
     
@@ -58,6 +61,11 @@ public class GameView extends SurfaceView
     private Paint strengthBarPaint;
     private double remainingStrength; // strength adjusted to the screen dimensions
     private boolean isPaused;
+    
+    private Bitmap treasure;
+    private float treasureXPos;
+    private float treasureYPos;
+    private Paint treasurePaint;
     
     private String text;
     
@@ -81,7 +89,7 @@ public class GameView extends SurfaceView
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
         aspectSkewFactor = ((float)screenWidth/(float)screenHeight)/testAspectRatio;
-                
+        
         //Load all Bitmap images and create all Sprite objects
         background = BitmapFactory.decodeResource(getResources(), R.drawable.dragonfistbackground);
         background = scaleFactor(background);
@@ -118,6 +126,60 @@ public class GameView extends SurfaceView
     	Log.d("aaaa", String.format("ScreenWidth: %d;  ScreenHeight: %d;", screenWidth, screenHeight));
         enemySpawner = new EnemySpawner(this);
         
+        startX = 0;
+        startY = 0;
+        currentX = 0;
+        currentY = 0;
+        linePaint = new Paint();
+        linePaint.setColor(Color.WHITE);
+        linePaint.setStrokeWidth(6*(aspectSkewFactor));
+        circleRadius = (int)(60*aspectSkewFactor);
+        circlePaint = new Paint();
+        circlePaint.setStrokeWidth(6*((aspectSkewFactor)));
+        circlePaint.setColor(Color.CYAN);
+        circlePaint.setAlpha((int) 122);	//Half way translucent
+       
+        textPaint = new Paint();
+        textPaint.setARGB(255, 0, 0, 255);
+        textPaint.setTypeface(Typeface.DEFAULT);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(60*screenHeight/testHeight);	//Change the Constant Value to increase/decrease the size of the text
+        textPaint.setTextAlign(Paint.Align.CENTER);
+ 
+        textVisible = true;
+        text = "Start";
+        textButton = new Rect();
+        
+        //This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
+        textPaint.getTextBounds(text, 0, text.length(), textButton);
+        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+        textButton.bottom += screenHeight/2;
+        textButton.top += screenHeight/2;
+        
+        rectPaint = new Paint();
+        rectPaint.setARGB(255, 255, 255, 51);
+        
+        
+        //Initialization of paint for Score Counter
+        scorePaint = new Paint();
+        scorePaint.setColor(Color.WHITE);
+        scorePaint.setTypeface(Typeface.DEFAULT_BOLD);
+        scorePaint.setAntiAlias(true);
+        float textSize = scorePaint.getTextSize();
+        scorePaint.setTextSize(textSize*3*screenHeight/testHeight);
+        scoreTextXPos = screenWidth - 275*screenWidth/testWidth;
+        scoreTextYPos = screenHeight - 60*screenHeight/testHeight;
+        //Initialize Start Button
+        
+        treasure = BitmapFactory.decodeResource(getResources(), R.drawable.treasure);
+        treasure = Bitmap.createScaledBitmap(treasure, (int)(treasure.getWidth()/3), (int)(treasure.getHeight()/4), false);
+        treasure = scaleFactor(treasure);
+        treasureXPos = (float) (screenWidth/2.0- treasure.getHeight()/2.0);
+        treasureYPos = (float) (screenHeight*3/4.0 - treasure.getHeight()/2.0);
+        treasurePaint = new Paint();
+        
+        
         if(savedInstanceState==null)
         {
         	for(int i=0;i<numEnemies;i++)
@@ -151,58 +213,7 @@ public class GameView extends SurfaceView
           		          savedInstanceState.getBoolean(String.format("enemyInitialized%d",i)));
   	        }
         }
-        startX = 0;
-        startY = 0;
-        currentX = 0;
-        currentY = 0;
-        linePaint = new Paint();
-        linePaint.setColor(Color.WHITE);
-        linePaint.setStrokeWidth(6*(aspectSkewFactor));
-        circleRadius = (int)(60*aspectSkewFactor);
-        circlePaint = new Paint();
-        circlePaint.setStrokeWidth(6*((aspectSkewFactor)));
-        circlePaint.setColor(Color.CYAN);
-        circlePaint.setAlpha((int) 122);	//Half way translucent
-       
-        textPaint = new Paint();
-        textPaint.setARGB(255, 0, 0, 255);
-        textPaint.setTypeface(Typeface.DEFAULT);
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(60*screenHeight/testHeight);	//Change the Constant Value to increase/decrease the size of the text
-        textPaint.setTextAlign(Paint.Align.CENTER);
- 
-        textVisible = true;
-        text = "Start";
-        textButton = new Rect();
         
-    	//Initialization of paint for Score Counter
-        paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setTypeface(Typeface.DEFAULT_BOLD);
-        paint.setAntiAlias(true);
-        float textSize = paint.getTextSize();
-        paint.setTextSize(textSize*3);
-        
-        //This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
-        textPaint.getTextBounds(text, 0, text.length(), textButton);
-        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
-        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
-        textButton.bottom += screenHeight/2;
-        textButton.top += screenHeight/2;
-        
-        rectPaint = new Paint();
-        rectPaint.setARGB(255, 255, 255, 51);
-        Log.d("Inner Rectangle", String.format("Rectangle: top: %d, bottom: %d, left: %d, right: %d", textButton.top, textButton.bottom, textButton.left, textButton.right));
-        
-        
-        //Initialize Start Button
-        
-        stateButton = new Button(getContext());
-        
-        
-    	stateButton.setX(screenWidth/2 - stateButton.getWidth()/2);
-    	stateButton.setY(screenWidth/2 - stateButton.getWidth()/2);
-        stateButton.setVisibility(Button.VISIBLE);
         
         holder.addCallback(new SurfaceHolder.Callback() {
 
@@ -308,20 +319,22 @@ public class GameView extends SurfaceView
     {
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
+    	
+    	
+        canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
+        canvas.drawBitmap(treasure, treasureXPos, treasureYPos, treasurePaint);
+    	
     	updateStrength();
+    	
+    	player.Draw(canvas);
     	canvas.drawRect(strengthBackground, strengthBackPaint);
     	canvas.drawRect(strengthBar, strengthBarPaint);
     	
-    	//Score Counter Display
-
-        int textPosWidth = (screenWidth)-200;
-        int textPosHeight = (screenHeight)-50;
-        canvas.drawText("Score: "+ player.killCount, textPosWidth, textPosHeight, paint);
-
     	
-		//canvas.drawBitmap(playerStandingBmp, x , 10, null);
-		
-    	player.Draw(canvas);
+    	
+    	
+    	//Score Counter Display
+        
 
 		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
 		if(lineDrawn)

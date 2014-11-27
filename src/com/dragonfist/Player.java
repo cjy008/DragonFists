@@ -23,8 +23,11 @@ public class Player
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
 
-	public static double strength; // 100 if it is full
+	public double strength; // 100 if it is full
 	public static int killCount;
+	
+	public static int startXPos;
+	public static int startYPos;
 
 	/**
 	 * Constructor that allows the caller to designate the starting location of the player
@@ -34,8 +37,9 @@ public class Player
 	 */
 	public Player (GameView gameView, float startX,float startY)
 	{
-		x = (int) startX;
-		y = (int) startY;
+		
+		startXPos = x = (int) startX;
+		startYPos = y = (int) startY;
 		playerStanding = GameView.scaleFactor((BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce)));
 		playerRightStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_right));
 		playerLeftStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_left));
@@ -58,8 +62,8 @@ public class Player
 		playerBackStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_back));
 		
 		body = new Sprite(playerStanding);
-		x = ((int)(gameView.screenWidth/2.0 - body.getWidth()/2.0));
-		y = ((int)(gameView.screenHeight*3.0/4.0 - body.getHeight()/2.0));
+		startXPos = x = ((int)(gameView.screenWidth/2.0 - body.getWidth()/2.0));
+		startYPos = y = ((int)(gameView.screenHeight*2.75/4.0 - body.getHeight()/2.0));
 		
 		killCount = 0;
 		strength = 100;

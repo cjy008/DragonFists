@@ -253,6 +253,8 @@ int drawable enemy4_right 0x7f020066
 int drawable enemy5_left 0x7f020067
 int drawable enemy5_right 0x7f020068
 int drawable ic_launcher 0x7f020069
+int drawable ic_launcher2 0x7f02006a
+int drawable treasure 0x7f02006b
 int id action_bar 0x7f05001c
 int id action_bar_activity_content 0x7f050015
 int id action_bar_container 0x7f05001b

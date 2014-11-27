@@ -1096,6 +1096,8 @@ containing a value of this type.
         public static final int enemy5_left=0x7f020067;
         public static final int enemy5_right=0x7f020068;
         public static final int ic_launcher=0x7f020069;
+        public static final int ic_launcher2=0x7f02006a;
+        public static final int treasure=0x7f02006b;
     }
     public static final class id {
         public static final int action_bar=0x7f05001c;
