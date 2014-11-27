@@ -23,8 +23,7 @@ public class Game extends Activity {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d("onCreate","onCreate has been called");
+    	super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(gameView = new GameView(this,savedInstanceState));
         try 
@@ -50,19 +49,20 @@ public class Game extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("onStart","onStart has been called");
+        
         Scanner sc;
 		try {
 			sc = new Scanner(new File(getFilesDir(), GameView.saveFileName));
 			if (sc.hasNextInt())
 	        {
-	        	GameView.highScore = sc.nextInt();
-	        	Log.d("HIGH SCORE STUFF!!!!", String.format("High Score retrieved in onCreate with a value of %d", GameView.highScore));
+	        	int temp = sc.nextInt();
+				if (temp > GameView.highScore)
+				{ GameView.highScore = temp; }
+	        	Log.d("HIGH SCORE STUFF!!!!", String.format("High Score retrieved in onStart with a value of %d", GameView.highScore));
 	        }
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Log.d("HIGH SCORE STUFF!!!!", "highscore.txt not found");
 		}
         
     }
@@ -73,25 +73,21 @@ public class Game extends Activity {
         gameView.pause(false);
         gameView.stall();
         
-        Log.d("onResume","onResume has been called");
+        
     }
     
     @Override
     public void onPause() {
         super.onPause();
         gameView.pause(true);
-        Log.d("onPause","onPause has been called");
+        
     }
 
     @Override
     public void onStop() 
     {
-//    	FileOutputStream FOS = new FileOutputStream(GameView.saveFileName);
-//    	FOS.write(GameView.highScore);
-//    	FOS.close();
-    	//GameView.highScore;
         super.onStop();
-        Log.d("onStop","onStop has been called");
+        
     }
     
     
@@ -101,9 +97,15 @@ public class Game extends Activity {
         super.onDestroy();
         gameView.GT.setRunning(false);
         gameView = null;
-        Log.d("onDestroy","onDestroy has been called");
+        
     }
-
+    
+    @Override
+    public void onBackPressed()
+    {
+    	// This will cause the app to exit when the back button is pushed.
+    	this.moveTaskToBack(true);
+    }
     
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -111,9 +113,8 @@ public class Game extends Activity {
       // Save UI state changes to the savedInstanceState.
       // This bundle will be passed to onCreate if the process is
       // killed and restarted.
-      Log.d("onSaveInstanceState","onSaveInstanceState has been called");
+      
   	  gameView.onSaveInstanceState(savedInstanceState);
-      // etc.
     }
     
     
