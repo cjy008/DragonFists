@@ -1,7 +1,6 @@
 Game
 	-Enemy Collisions
-		-Perhaps fix collisions? Make them less elastic? Or make them unrealistic?
-		-Enemies should only be able to collide once.
+		-Enemies should only be able to collide before fading
 	
 	-Despawn enemies after off screen more efficiently - sometimes they run into enemies off screen!
 	

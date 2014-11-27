@@ -13,10 +13,12 @@ public class Enemy {
 
 	public float x,y, radius;
 	public double velx,vely,health;
-	public boolean alive,initialized; //These two do different things.
+	public boolean alive, initialized; //These two do different things.
 											//alive - If enemy has been killed - they can still hit other enemies!
 											//uninitialized - If enemy is uninitialized, they are not drawn and don't effect gameplay.
+	public float fading;			  //Fading is our enemy's Alpha level. After a certain number of collisions the enemy fades and will not collide with other enemies.
 	public boolean flipped;			  //If enemy spawns on left, it is not flipped, if on right it is.
+	
 	private int spriteIndex; 
 	//public static Sprite sprite;
 	private static Sprite enemySprites[];
@@ -51,7 +53,10 @@ public class Enemy {
 	
 	
 	
-	
+	public Enemy ()
+	{
+		initialized = false;
+	}
 	/**
 	 * Use this method for initial construction of enemies - NOT after the game is resumed.
 	 * @param x the position that the Enemy object is initialized at
@@ -96,8 +101,9 @@ public class Enemy {
 		alive = true;
 		health = Math.sqrt(Math.pow(velx,2)+Math.pow(vely,2));
 		initialized = true;
-		Log.d("Initialization Health",String.format("Initial health: %f", health));
-		Log.d("Initialization Positions", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
+		fading = 255;
+		//Log.d("Initialization Health",String.format("Initial health: %f", health));
+		//Log.d("Initialization Positions", String.format("x: %f y: %f velx: %f vely: %f",x,y,velx,vely));
 	}
 	
 	/**
@@ -155,12 +161,21 @@ public class Enemy {
 		x += (float)(velx*passedTime);
 		vely += (EnemySpawner.gravity*passedTime);
 		y+= (float) (vely*passedTime);
+		if(fading<255)
+		{
+			fading-=passedTime*300;
+			if(fading<=0)
+			{
+				fading = 255;
+				initialized = false;
+			}
+		}
 		
 	}
 	
 	public void Draw(Canvas canvas)
 	{ 
-		enemySprites[spriteIndex].Draw(canvas,x,y);//,velx,vely,flipped);
+		enemySprites[spriteIndex].Draw(canvas,x,y,fading);//,velx,vely,flipped);
 	}
 	
 	/**
@@ -199,10 +214,7 @@ public class Enemy {
 		double mass = 1.0; //TODO 
 						   //OPTIONAL: This just changes how powerful the hits are. Can give this attribute to enemies
 					  	   //if we want enemies with different weights.
-		velx /= 2;
-		vely /= 2;
-		velx += xFor/mass;
-		vely += yFor/mass;
+		
 		double force = Math.sqrt(Math.pow(xFor,2)+Math.pow(yFor, 2));
 		
 		health -= (force);								//Force is dependent on screen size because of pixel-scaled vectors!
@@ -210,12 +222,33 @@ public class Enemy {
 														//However we already make health relative to initial velocity, which solves this problme.
 		
 		Log.d("Hit Method",String.format("Enemy health is now %f",health));
-		if(health<0)
+		if(health<=0)
 		{
-			alive=false;
-
-			Player.killCount += 1;
-			setSprite(xFor, yFor);
+			if(alive)
+			{
+				alive=false;
+				health = 0;
+				velx /= 2;
+				vely /= 2;
+				velx += xFor/mass;
+				vely += yFor/mass;
+				Player.killCount += 1;
+				setSprite(xFor, yFor);
+			}
+			else
+			{
+				if(health<-100)
+				{
+					if(fading==255)	//when this method is called, fading should always be zero - we call fading check jsut in case.
+					{
+						fading=254;
+					}
+				}
+				velx /= 2;
+				vely /= 2;
+				velx += xFor/mass;
+				vely += yFor/mass;
+			}
 		}
 	}
 	
@@ -269,17 +302,17 @@ public class Enemy {
 	
 	public boolean isCollision(float otherX1, float otherX2, float otherY1, float otherY2)
 	{
-		float halfSpriteWidth = enemySprites[this.spriteIndex].getWidth()/4;
-		float halfSpriteHeight = enemySprites[this.spriteIndex].getHeight()/4;
-		if(otherX1<(halfSpriteWidth+this.x))
+		float fourthSpriteWidth = enemySprites[this.spriteIndex].getWidth()/4;
+		float fourthSpriteHeight = enemySprites[this.spriteIndex].getHeight()/4;
+		if(otherX1<(3*fourthSpriteWidth+this.x))
 			{
 				//Log.d("Zeta Test",String.format("enemySprites[this.spriteIndex].getWidth()+this.x: %f",(enemySprites[this.spriteIndex].getWidth()+this.x)));
-				if(otherX2>this.x-halfSpriteWidth)
+				if(otherX2>this.x+fourthSpriteWidth)
 				{
 				//	Log.d("Zeta Test", String.format("this.x: %f",this.x));
-					if(otherY1<(halfSpriteHeight+this.y))
+					if(otherY1<(3*fourthSpriteHeight+this.y))
 					{
-						if(otherY2>this.y-halfSpriteHeight)
+						if(otherY2>this.y+fourthSpriteHeight)
 						{
 
 							Log.d("Succesful Collision","Succesful Collision");
@@ -338,9 +371,7 @@ public class Enemy {
 	        
 	        this.hit(impulse.x,impulse.y);
 	        
-	        Vector2 otherEndVel = otherVelVector.subtract(impulse);
-	        enemy.velx = otherEndVel.x;
-	        enemy.vely = otherEndVel.y;
+	        enemy.hit(-impulse.x, -impulse.y);
 	    }
 
 	}

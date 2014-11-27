@@ -119,7 +119,7 @@ public class GameView extends SurfaceView
         isPaused = false;
         
         //Load Game Logic Variables
-        numEnemies = 10;
+        numEnemies = 20;
     	
         enemies = new Enemy[numEnemies];
 
@@ -184,6 +184,12 @@ public class GameView extends SurfaceView
         {
         	for(int i=0;i<numEnemies;i++)
 	        {
+	        	enemies[i] = new Enemy();
+	        }
+        	/*
+        	
+        	for(int i=0;i<numEnemies;i++)
+	        {
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i] = enemySpawner.initializeEnemy();
@@ -193,7 +199,7 @@ public class GameView extends SurfaceView
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i].initialized = false;
-	        }    
+	        }    */
 
         }        
         else        	
@@ -564,20 +570,24 @@ public class GameView extends SurfaceView
 				
 					if(!enemies[i].alive)
 					{
-						for(int j=0; j<numEnemies;j++)
+						//Log.d("FadingTest",String.format("%f",enemies[i].fading));
+						if(enemies[i].fading==255)
 						{
-							if(i!=j)
-							{	
-								float halfSpriteWidth;
-								float halfSpriteHeight;
-								if(enemies[j].alive)
-								{
-									halfSpriteWidth = enemies[i].getSprite().getWidth()/4;
-									halfSpriteHeight = enemies[i].getSprite().getHeight()/4;
-									if(enemies[j].isCollision(enemies[i].x-halfSpriteWidth,enemies[i].x+halfSpriteWidth,enemies[i].y-halfSpriteHeight, enemies[i].y+halfSpriteHeight))
+							for(int j=0; j<numEnemies;j++)
+							{
+								if(i!=j)
+								{	
+									float fourthSpriteWidth;
+									float fourthSpriteHeight;
+									if(enemies[j].alive)
 									{
-										Log.d("Succesful collision!","Succesful collision!");
-										enemies[j].collision(enemies[i]);
+										fourthSpriteWidth = enemies[i].getSprite().getWidth()/4;
+										fourthSpriteHeight = enemies[i].getSprite().getHeight()/4;
+										if(enemies[j].isCollision(enemies[i].x+fourthSpriteWidth,enemies[i].x+3*fourthSpriteWidth,enemies[i].y+fourthSpriteHeight, enemies[i].y+3*fourthSpriteHeight))
+										{
+											Log.d("Succesful collision!","Succesful collision!");
+											enemies[j].collision(enemies[i]);
+										}
 									}
 								}
 							}
