@@ -337,14 +337,6 @@ public class GameView extends SurfaceView
     	
     	//Score Counter Display
         
-
-		//Log.d("Beta Test","draggable: "+Boolean.toString(draggable));
-		if(lineDrawn)
-		{
-			//canvas.drawLine(dragstartx,dragstarty,dragendx,dragendy, null);
-			canvas.drawLine(startX,startY,currentX,currentY, linePaint);
-			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
-		}
 		for (int i=0; i<numEnemies;i++)
 		{
 			if(enemies[i].initialized)
@@ -357,6 +349,7 @@ public class GameView extends SurfaceView
 		}
 		if(lineDrawn)
 		{
+			canvas.drawLine(startX,startY,currentX,currentY, linePaint);
 			canvas.drawCircle(startX, startY, circleRadius, circlePaint);
 		}
 		if (textVisible)
@@ -418,9 +411,53 @@ public class GameView extends SurfaceView
 		        	lineDrawn = true;
 		            //final int pointerIndex = ev.findPointerIndex(mActivePointerId);
 		            // Only move if the ScaleGestureDetector isn't processing a gesture.
-		            
-		            currentX = x;
-		            currentY = y;
+		            float diffx = x-startX;
+		            float diffy = y-startY;
+		            Log.d("Testing X", String.format("%f",diffx));
+		            Log.d("Testing Y", String.format("%f",diffy));
+		            if((Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2))))/ GameView.screenWidth /Player.reduceStrengthVariable *100)>player.strength)
+		            {
+		            	//Log.d("Testing 1", String.format("%f",(Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2)))))));
+		            	//Log.d("Testing 1", String.format("%f",(Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2))))/ GameView.screenWidth /Player.reduceStrengthVariable *100)));		            	
+//		            	double allowedDist2 = (player.strength/100.0)*Player.reduceStrengthVariable*GameView.screenWidth;
+//		            	double allowedDist3 = player.strength/(100.0*Player.reduceStrengthVariable*GameView.screenWidth);
+		            	double allowedDist = (player.strength/(100.0*Player.reduceStrengthVariable))*GameView.screenWidth;
+		            	//Log.d("Testing 2", String.format("%f",allowedDist));
+		            	//Log.d("Testing 2-2", String.format("%f",allowedDist2));
+		            	//Log.d("Testing 2-3", String.format("%f",allowedDist3));
+		            	double radians = Math.atan(diffy/diffx);
+		            	if(diffx<0)
+		            	{
+		            		radians+=Math.PI;
+		            	}
+
+		            	Log.d("Testing Radians", String.format("%f",radians));
+
+		            	Log.d("Testing Sin Radians", String.format("%f",Math.sin(radians)));
+
+		            	Log.d("Testing Cos Radians", String.format("%f",Math.cos(radians)));
+		            	
+		            	currentX = (float)(allowedDist*Math.cos(radians))+startX;
+	            		currentY = (float)(allowedDist*Math.sin(radians))+startY;
+		            	
+		            	/*if((radians>Math.PI/2&&radians<Math.PI)||((radians<0)&&(radians>MATH.PI/-2)))
+		            	{
+		            		currentX = (float)(allowedDist*Math.cos(radians));
+		            		currentY = (float)(allowedDist*Math.sin(radians));
+		            	}
+		            	else
+		            	{
+		            		currentX = (float)(allowedDist*Math.cos(radians));
+		            		currentY = (float)(allowedDist*Math.sin(radians));
+		            	}*/
+		            	
+		            }
+		            else
+		            {
+		            	
+			            currentX = x;
+			            currentY = y;
+		            }
 	        	}
 	
 	            break;
@@ -485,12 +522,6 @@ public class GameView extends SurfaceView
 	    		centerX = enemies[i].x+(width/2);
 	    		centerY = enemies[i].y+(height/2);
 
-	     		//Log.d("brisketbeef2",String.format("centerX: %f", centerX));
-	     		//Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
-	//    		Log.d("brisketbeef2",String.format("centerX: %f", centerX));
-	//    		Log.d("brisketbeef2","centerY: "+Float.toString(centerY));
-	//    		Log.d("brisketbeef2","width: "+String.format("%d", width));
-	//    		Log.d("brisketbeef2","height: "+String.format("%d", height));
 	    		if(Math.abs((x-centerX))<width/2)
 	    		{
 	    			if(Math.abs((y-centerY))<height/2)

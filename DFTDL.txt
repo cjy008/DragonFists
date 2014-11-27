@@ -1,9 +1,9 @@
 Game
-	-Enemy Collisions
-		-Enemies should only be able to collide before fading
+
 	
-	-Despawn enemies after off screen more efficiently - sometimes they run into enemies off screen!
-	
+	-Player attacks
+		-Player can't attack with no strength!
+
 	-OnPause
 		-Crashes on return button.
 		-Doesn't crash in any other known cases.
@@ -15,11 +15,7 @@ Game
 	-Treasure box
 		-Draw treasure box for Bruce to defend.
 		-Cause game over and game restart after game.
-	
-	-Player attacks (Optional)
-		-Edit Player attack feature!
-		-Player should return to initial position after a set amount of time
-		-Calibrate so qit feels more natural
+
 		
 	-Combos!
 		-Multiple collisions = bonus points;
