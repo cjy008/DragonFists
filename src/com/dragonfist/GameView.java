@@ -1,11 +1,18 @@
 package com.dragonfist;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -31,6 +38,7 @@ public class GameView extends SurfaceView
     public static int testWidth = 1280;
     public static int testHeight = 720;
     public static int highScore;
+    public static final String saveFileName = "HighScore.txt";
     
     public static float aspectSkewFactor;
     public int bufferspace = 40;
@@ -51,6 +59,11 @@ public class GameView extends SurfaceView
     private Paint scorePaint;
     
     private boolean gameOver;
+    private String highScoreText;
+    private Paint highScorePaint;
+    private int highScoreXPos;
+    private int highScoreYPos;
+    
     private Paint rectPaint;
     private Paint textPaint;
     private Rect textButton;
@@ -120,7 +133,7 @@ public class GameView extends SurfaceView
         isPaused = false;
         
         //Load Game Logic Variables
-        numEnemies = 10;
+        numEnemies = 20;
     	
         enemies = new Enemy[numEnemies];
 
@@ -180,9 +193,26 @@ public class GameView extends SurfaceView
         treasureYPos = (float) (screenHeight*3/4.0 - treasure.getHeight()/2.0);
         treasurePaint = new Paint();
         
+        highScoreText = "";
+        highScorePaint = new Paint();
+        //highScorePaint.setColor(Color.WHITE);
+        highScorePaint.setARGB(255, 00, 200, 00);
+        highScorePaint.setTypeface(Typeface.DEFAULT_BOLD);
+        highScorePaint.setTextSize(100*screenHeight/testHeight);
+        highScorePaint.setTextAlign(Align.CENTER);
+        highScoreXPos = screenWidth/2;
+        highScoreYPos = (int)highScorePaint.getTextSize();
+        
+        
         
         if(savedInstanceState==null)
         {
+        	for(int i=0;i<numEnemies;i++)
+	        {
+	        	enemies[i] = new Enemy();
+	        }
+        	/*
+        	
         	for(int i=0;i<numEnemies;i++)
 	        {
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
@@ -194,11 +224,12 @@ public class GameView extends SurfaceView
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i].initialized = false;
-	        }
+
+	        }    */
         }        
         else        	
         {
-        	player.strength = savedInstanceState.getDouble("playerStrength", player.maxStrenght);
+        	player.strength = savedInstanceState.getDouble("playerStrength", player.maxStrength);
         	player.killCount = savedInstanceState.getInt("score");      	
           	player.x = savedInstanceState.getInt("playerX", player.x);
           	player.y = savedInstanceState.getInt("playerY", player.y);
@@ -267,6 +298,9 @@ public class GameView extends SurfaceView
       // killed and restarted.
       for(int i=0; i<numEnemies;i++)
       {	
+    	  savedInstanceState.putDouble("playerStrength", player.strength);
+    	  savedInstanceState.putInt("score", Player.killCount);
+    	  savedInstanceState.putInt("highScore", highScore);
     	  savedInstanceState.putFloat(String.format("enemyX%d",i), enemies[i].x);
     	  savedInstanceState.putFloat(String.format("enemyY%d",i), enemies[i].y);
     	  savedInstanceState.putDouble(String.format("enemyVelX%d",i), enemies[i].velx);
@@ -361,6 +395,8 @@ public class GameView extends SurfaceView
 		canvas.drawRect(strengthBackground, strengthBackPaint);
     	canvas.drawRect(strengthBar, strengthBarPaint);
     	canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
+    	if (gameOver)
+    	{ canvas.drawText(highScoreText, highScoreXPos, highScoreYPos, highScorePaint); }
     }
     
 
@@ -518,6 +554,9 @@ public class GameView extends SurfaceView
      */
     private void restart() 
     {
+    	player.strength = player.maxStrength;
+    	player.killCount = 0;
+    	text = "Start";
 		// TODO Auto-generated method stub
     	for(int i=0;i<numEnemies;i++)
         {
@@ -639,30 +678,32 @@ public class GameView extends SurfaceView
 				
 					if(!enemies[i].alive)
 					{
-						for(int j=0; j<numEnemies;j++)
+						//Log.d("FadingTest",String.format("%f",enemies[i].fading));
+						if(enemies[i].fading==255)
 						{
-							if(i!=j)
-							{	
-								float halfSpriteWidth;
-								float halfSpriteHeight;
-								if(enemies[j].alive)
-								{
-									halfSpriteWidth = enemies[i].getSprite().getWidth()/4;
-									halfSpriteHeight = enemies[i].getSprite().getHeight()/4;
-									if(enemies[j].isCollision(enemies[i].x-halfSpriteWidth,enemies[i].x+halfSpriteWidth,enemies[i].y-halfSpriteHeight, enemies[i].y+halfSpriteHeight))
+							for(int j=0; j<numEnemies;j++)
+							{
+								if(i!=j)
+								{	
+									float fourthSpriteWidth;
+									float fourthSpriteHeight;
+									if(enemies[j].alive)
 									{
-										enemies[j].collision(enemies[i]);
+										fourthSpriteWidth = enemies[i].getSprite().getWidth()/4;
+										fourthSpriteHeight = enemies[i].getSprite().getHeight()/4;
+										if(enemies[j].isCollision(enemies[i].x+fourthSpriteWidth,enemies[i].x+3*fourthSpriteWidth,enemies[i].y+fourthSpriteHeight, enemies[i].y+3*fourthSpriteHeight))
+										{
+											Log.d("Succesful collision!","Succesful collision!");
+											enemies[j].collision(enemies[i]);
+										}
 									}
 								}
 							}
 						}
 					}
-					//if (enemies[i].health>0)
-					//{
-						Rect treasureRect = new Rect((int)treasureXPos, (int)treasureYPos, (int)treasureXPos+ (int)treasure.getWidth(), (int)treasureYPos + (int)treasure.getHeight());
-						Rect enemyRect =  new Rect(enemies[i].getSprite().getX(), enemies[i].getSprite().getY(), enemies[i].getSprite().getX() + enemies[i].getSprite().getWidth(), enemies[i].getSprite().getY() + enemies[i].getSprite().getHeight());
-						//if (enemies[i].isCollision(treasureXPos, + treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()));
-						if (treasureRect.intersect(enemyRect))
+					else
+					{
+						if (enemies[i].isCollision(treasureXPos, treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()))
 						{
 							
 							Log.d("AAAAAA", String.format("Enemy: left: %f; right: %f; up: %f, down: %f", enemies[i].getPosVector().x, enemies[i].getPosVector().x + enemies[i].getSprite().getWidth(), enemies[i].getPosVector().y, enemies[i].getPosVector().y + enemies[i].getSprite().getHeight()));
@@ -680,7 +721,28 @@ public class GameView extends SurfaceView
 	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
 	        		        textButton.bottom += screenHeight/2;
 	        		        textButton.top += screenHeight/2;
-						//}
+	        		        
+	        		        if (player.killCount > highScore)
+	        		        {
+		        		        
+								try 
+								{
+									FileOutputStream FOS = new FileOutputStream(GameView.saveFileName);
+									FOS.write(player.killCount);
+									FOS.close();
+									Log.d("HIGH SCORE STUFF!!!!", "highsocre.txt successfully written");
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									Log.e("URGENT", "File Write Error: IO Exception");
+								}
+								
+								highScoreText = String.format("NEW HIGH SCORE: %d", player.killCount);
+								highScore = player.killCount;
+	        		        }
+	        		        else
+	        		        { highScoreText = String.format("HIGH SCORE: %d", highScore); }
+						}
 					}
 				}
 				

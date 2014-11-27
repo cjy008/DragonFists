@@ -26,7 +26,7 @@ public class EnemySpawner {
 	public EnemySpawner(GameView gameView){
 		this.gameView = gameView;
 		timeCounter = 0;
-		spawnTime = 0.25f;
+		spawnTime = 0.5f;
 		//Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
 	}
 	
@@ -44,7 +44,7 @@ public class EnemySpawner {
 	// We're creating a 20 pixel border around the screen of size 100
 	public Enemy initializeEnemy(){
 		
-
+		
 		initializePosition();
 		
 		
@@ -60,6 +60,7 @@ public class EnemySpawner {
 		}
 		//Testing purposes
 		//System.out.println("X = " + positionX + " Y = " + positionY);
+		
 	}
 	
 	private void initializePosition(){
@@ -103,8 +104,6 @@ public class EnemySpawner {
 			}else{*/
 				double time = Math.sqrt((screenHeight-positionY) *2 / gravity);
 				float distance = (screenWidth/2)-positionX;
-				Log.d("whoops",String.format("distance: %f",distance));
-				Log.d("whoops2",String.format("time: %f",time));
 				velocityX = distance / time;
 			//}
 	}

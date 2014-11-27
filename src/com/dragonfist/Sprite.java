@@ -3,6 +3,7 @@ package com.dragonfist;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
  
 public class Sprite {
        private int x = 0;
@@ -75,6 +76,13 @@ public class Sprite {
        public void Draw(Canvas canvas,float x, float y) 
        {
            canvas.drawBitmap(bmp, (int)x , (int)y, null);
+       }
+       
+       public void Draw(Canvas canvas,float x, float y,float alpha) 
+       {
+    	   Paint paint = new Paint();
+    	   paint.setAlpha((int)alpha);
+           canvas.drawBitmap(bmp, (int)x , (int)y, paint);
        }
        /**
         * 

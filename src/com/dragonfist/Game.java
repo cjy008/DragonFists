@@ -1,5 +1,12 @@
 package com.dragonfist;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,30 +27,41 @@ public class Game extends Activity {
         Log.d("onCreate","onCreate has been called");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(gameView = new GameView(this,savedInstanceState));
-        
-        /*
-        Button game_state = (Button)findViewById(R.id.game_state);
-        if (game_state != null)
+        try 
         {
-	        game_state.setText("Start");
-	        
-	        game_state.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					gameView.pause(false);
-					v.setVisibility(View.INVISIBLE);
+			FileReader FR = new FileReader(GameView.saveFileName);
+			char[] buffer = new char[10];
+			if (FR.ready()) 
+			{  
+				int length = FR.read(buffer);
+				for (int i = length - 1; i >= 0; i--)
+				{
+					GameView.highScore += buffer[i]*Math.pow(10, length - 1 - i);
 				}
-			});
-        }
-        */
+			}
+			FR.close();
+		} 
+        catch (Exception e1) 
+        { e1.printStackTrace(); }
     }
     
     @Override
     public void onStart() {
         super.onStart();
         Log.d("onStart","onStart has been called");
+        Scanner sc;
+		try {
+			sc = new Scanner(new File(GameView.saveFileName));
+			if (sc.hasNextInt())
+	        {
+	        	GameView.highScore = sc.nextInt();
+	        }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.d("HIGH SCORE STUFF!!!!", "highscore.txt not found");
+		}
+        
     }
     
     @Override
@@ -63,7 +81,12 @@ public class Game extends Activity {
     }
 
     @Override
-    public void onStop() {
+    public void onStop() 
+    {
+//    	FileOutputStream FOS = new FileOutputStream(GameView.saveFileName);
+//    	FOS.write(GameView.highScore);
+//    	FOS.close();
+    	//GameView.highScore;
         super.onStop();
         Log.d("onStop","onStop has been called");
     }
