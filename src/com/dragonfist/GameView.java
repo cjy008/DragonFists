@@ -276,10 +276,10 @@ public class GameView extends SurfaceView
       // etc.
     }
     
-    private void updateStrength(){
+    private void updateStrength(float timePassed){
     	if (isPaused == false){
-	    	if (player.strength > 0 && player.strength <100){
-	    		player.strength += 0.1; 
+	    	if (player.strength <100){
+	    		player.strength += (0.5*timePassed*(1000/33)); 
 	    	}
 	    }
     	remainingStrength = (screenWidth - screenWidth/25*2)* (player.strength)/100;
@@ -289,7 +289,7 @@ public class GameView extends SurfaceView
         strengthBarPaint.setARGB(200, 200, 100, 100);}
     	
     	if (player.strength > 20){
-        strengthBarPaint.setARGB(200, 100, 200, 100);}
+        strengthBarPaint.setARGB(255, 100, 200, 100);}
     }
     
     /**
@@ -308,7 +308,6 @@ public class GameView extends SurfaceView
     {
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
-    	updateStrength();
     	canvas.drawRect(strengthBackground, strengthBackPaint);
     	canvas.drawRect(strengthBar, strengthBarPaint);
     	
@@ -526,6 +525,10 @@ public class GameView extends SurfaceView
 				spawnEnemy = true;		
 			}
 			
+
+
+	    	updateStrength(timePassed);
+			
 			for(int i=0;i<numEnemies;i++)
 			{
 				if(enemies[i].initialized)
@@ -559,8 +562,8 @@ public class GameView extends SurfaceView
 								float halfSpriteHeight;
 								if(enemies[j].alive)
 								{
-									halfSpriteWidth = enemies[i].getSprite().getWidth()/2;
-									halfSpriteHeight = enemies[i].getSprite().getHeight()/2;
+									halfSpriteWidth = enemies[i].getSprite().getWidth()/4;
+									halfSpriteHeight = enemies[i].getSprite().getHeight()/4;
 									if(enemies[j].isCollision(enemies[i].x-halfSpriteWidth,enemies[i].x+halfSpriteWidth,enemies[i].y-halfSpriteHeight, enemies[i].y+halfSpriteHeight))
 									{
 										Log.d("Succesful collision!","Succesful collision!");

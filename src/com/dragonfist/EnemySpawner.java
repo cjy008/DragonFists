@@ -35,7 +35,7 @@ public class EnemySpawner {
 		timeCounter+=timePassed;
 		if(timeCounter>spawnTime)
 		{
-			timeCounter = 0;
+			timeCounter = timeCounter-spawnTime;
 			return true;
 		}
 		else return false;
