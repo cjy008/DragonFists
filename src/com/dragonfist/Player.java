@@ -22,7 +22,7 @@ public class Player
 	private Bitmap playerFrontStrike; // angle of attack from 225 to 135 degrees NoE
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
-
+	public static final int maxStrenght = 100;
 	public double strength; // 100 if it is full
 	public static int killCount;
 	
@@ -46,7 +46,7 @@ public class Player
 		playerFrontStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_front));
 		playerBackStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_back));
 		killCount = 0;
-		strength = 100;
+		strength = maxStrenght;
 	}
 	/**
 	 * Player is initialized by default 1/2 way along the screen horizontally and 3/4th down vertically
@@ -54,7 +54,6 @@ public class Player
 	 */
 	public Player (GameView gameView)
 	{
-		//TODO Change the image files for everything except playerStanding
 		playerStanding = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bruce));
 		playerRightStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_right));
 		playerLeftStrike = GameView.scaleFactor(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.b_left));
@@ -66,7 +65,7 @@ public class Player
 		startYPos = y = ((int)(gameView.screenHeight*2.75/4.0 - body.getHeight()/2.0));
 		
 		killCount = 0;
-		strength = 100;
+		strength = maxStrenght;
 	}
 	
 	public void update()
@@ -88,9 +87,6 @@ public class Player
 	 */
 	public void hit(Enemy enemy,float xDir, float yDir)
 	{
-		//TODO Reduce Player Strength by relative amount (Math.sqrt(Math.pow(xAcc,2)+Math.pow(yAcc,2) is "amount of force")
-		//TODO Change Player sprite
-		//TODO Change Player position - add from attack
 		if(Math.abs(xDir) >= Math.abs(yDir))	//Attack angle is either to the right or left
 		{
 			if (xDir >= 0)
@@ -135,7 +131,7 @@ public class Player
 		
 		//To reduce the strength
 		int reduceStrengthVariable = 1; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
-		double strengthUsed = Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2)) / GameView.screenWidth /reduceStrengthVariable *100;
+		double strengthUsed = Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2)) / GameView.screenWidth /reduceStrengthVariable *maxStrenght;
 		Log.d("strengthUsed", String.valueOf(strengthUsed));
 		if (strengthUsed >= strength){
 			strength = 0;

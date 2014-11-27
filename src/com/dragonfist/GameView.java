@@ -30,6 +30,7 @@ public class GameView extends SurfaceView
     public static float testAspectRatio = (float)(1280.0/720.0);
     public static int testWidth = 1280;
     public static int testHeight = 720;
+    public static int highScore;
     
     public static float aspectSkewFactor;
     public int bufferspace = 40;
@@ -49,7 +50,7 @@ public class GameView extends SurfaceView
     private int scoreTextYPos;
     private Paint scorePaint;
     
-    
+    private boolean gameOver;
     private Paint rectPaint;
     private Paint textPaint;
     private Rect textButton;
@@ -82,7 +83,7 @@ public class GameView extends SurfaceView
 
     public GameView(Context context,Bundle savedInstanceState) {
     	super(context);
-    	
+    	gameOver = false;
     	//Load Android Syntax Variables
     	selfReference = this;
         holder = getHolder();
@@ -193,13 +194,12 @@ public class GameView extends SurfaceView
 	        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
 	        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
 	        	enemies[i].initialized = false;
-	        }    
-
+	        }
         }        
         else        	
         {
-        	 // TODO Once we implement player strength: player.strength = savedInstanceState.getDouble("playerStrength", playerStrength);	        	 
-        	 // TODO Once we have a score counter: score = savedInstanceState.getInt("score");      	
+        	player.strength = savedInstanceState.getDouble("playerStrength", player.maxStrenght);
+        	player.killCount = savedInstanceState.getInt("score");      	
           	player.x = savedInstanceState.getInt("playerX", player.x);
           	player.y = savedInstanceState.getInt("playerY", player.y);
           	for(int i=0;i<numEnemies;i++)
@@ -320,14 +320,12 @@ public class GameView extends SurfaceView
     	canvas.drawColor(Color.BLACK);
     	canvas.drawBitmap(background, 0, 0, null);
     	
-        canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
+        
         
         canvas.drawBitmap(treasure, treasureXPos, treasureYPos, treasurePaint);
     	
     	player.Draw(canvas);
     	
-    	canvas.drawRect(strengthBackground, strengthBackPaint);
-    	canvas.drawRect(strengthBar, strengthBarPaint);
     	
     	//Score Counter Display
         
@@ -358,6 +356,11 @@ public class GameView extends SurfaceView
 			canvas.drawRect(textButton, rectPaint);
 			canvas.drawText(text, screenWidth/2, screenHeight/2, textPaint);
 		}
+		
+		//HUD elements: strength bar and score
+		canvas.drawRect(strengthBackground, strengthBackPaint);
+    	canvas.drawRect(strengthBar, strengthBarPaint);
+    	canvas.drawText("Score: " + player.killCount, scoreTextXPos, scoreTextYPos, scorePaint);
     }
     
 
@@ -375,8 +378,22 @@ public class GameView extends SurfaceView
 	        {
 	        	if (textVisible)
 	        	{
-	        		textPaint.setARGB(255, 255, 0, 0);
-	        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+	        		if (gameOver) { text = "Start"; }
+	        		float width = textPaint.measureText(text);
+	        		float height = textPaint.getTextSize();
+	        		if (!(x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2))
+	        		{ 
+		        		textPaint.setARGB(255, 255, 0, 0);
+		        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		        		
+		        		textPaint.getTextBounds(text, 0, text.length(), textButton);
+        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+        		        textButton.bottom += screenHeight/2;
+        		        textButton.top += screenHeight/2;
+	        		}
+	        		else
+	        		{ if (gameOver) {text = "Game Over"; } }
 	        	}
 	        	//Log.d("aaaa",String.format("Screen Coordinates = (%f,%f)",x,y));
 //	        	startX = x;
@@ -393,19 +410,41 @@ public class GameView extends SurfaceView
 	        {
 	        	if (textVisible)
 	        	{
+	        		if (gameOver) { text = "Start"; }
+	        		
 	        		float width = textPaint.measureText(text);
 	        		float height = textPaint.getTextSize();
 	        		if (x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2)
 	        		{ 
 	        			textPaint.setTypeface(Typeface.DEFAULT);
 	        			textPaint.setARGB(255, 0, 0, 255);
+	        			if (gameOver)
+	        			{
+	        				//This is used to measure the size of the rectangle around the text: DO NOT CHANGE!!!!!
+	        				text = "Game Over";
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+	        			}
 	        		}
 	        		else
 	        		{
 	        			textPaint.setARGB(255, 255, 0, 0);
 		        		textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		        		if (gameOver)
+		        		{
+		        			text = "Start";
+
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+		        		}
 	        		}
-	        			
+	        		
 	        	}
 	        	if(draggable)
 	        	{
@@ -431,6 +470,23 @@ public class GameView extends SurfaceView
 	        		if (!(x >  screenWidth/2 + width/2 || x < screenWidth/2 - width/2 || y > screenHeight/2 + height/2 || y < screenHeight/2 - height/2))
 	        		{
 	        			textVisible = false;
+	        			if (gameOver)
+	        			{ 
+	        				gameOver = false;
+	        				restart();
+	        			}
+	        		}
+	        		else
+	        		{
+	        			if (gameOver)
+	        			{
+	        				text = "Game Over";
+	        				textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+	        			}
 	        		}
 	        			
 	        	}
@@ -458,6 +514,25 @@ public class GameView extends SurfaceView
     }
     
     /**
+     * Called when the GameOver button is clicked: Reinitialize enemies
+     */
+    private void restart() 
+    {
+		// TODO Auto-generated method stub
+    	for(int i=0;i<numEnemies;i++)
+        {
+        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	enemies[i] = enemySpawner.initializeEnemy();
+        }
+    	for(int i=0;i<4;i++)
+        {
+        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
+        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
+        	enemies[i].initialized = false;
+        }
+	}
+	/**
      * Description: Round the inital player snap to the center of the closest enemy
      * @param x the horizontal coordinate of the initial tap point
      * @param y the vertical coordinate of the initial tap point
@@ -576,12 +651,36 @@ public class GameView extends SurfaceView
 									halfSpriteHeight = enemies[i].getSprite().getHeight()/4;
 									if(enemies[j].isCollision(enemies[i].x-halfSpriteWidth,enemies[i].x+halfSpriteWidth,enemies[i].y-halfSpriteHeight, enemies[i].y+halfSpriteHeight))
 									{
-										Log.d("Succesful collision!","Succesful collision!");
 										enemies[j].collision(enemies[i]);
 									}
 								}
 							}
 						}
+					}
+					//if (enemies[i].health>0)
+					//{
+						Rect treasureRect = new Rect((int)treasureXPos, (int)treasureYPos, (int)treasureXPos+ (int)treasure.getWidth(), (int)treasureYPos + (int)treasure.getHeight());
+						Rect enemyRect =  new Rect(enemies[i].getSprite().getX(), enemies[i].getSprite().getY(), enemies[i].getSprite().getX() + enemies[i].getSprite().getWidth(), enemies[i].getSprite().getY() + enemies[i].getSprite().getHeight());
+						//if (enemies[i].isCollision(treasureXPos, + treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()));
+						if (treasureRect.intersect(enemyRect))
+						{
+							
+							Log.d("AAAAAA", String.format("Enemy: left: %f; right: %f; up: %f, down: %f", enemies[i].getPosVector().x, enemies[i].getPosVector().x + enemies[i].getSprite().getWidth(), enemies[i].getPosVector().y, enemies[i].getPosVector().y + enemies[i].getSprite().getHeight()));
+							Log.d("AAAAAA", String.format("Treasure: left: %f; right: %f; up: %f, down: %f", treasureXPos, + treasureXPos + treasure.getWidth(), treasureYPos, treasureYPos + treasure.getHeight()));
+							Log.d("AAAAAA", String.format("screenWidth: %d; screenHeight: %d", screenWidth, screenHeight));
+							text = "Game Over";
+							gameOver = true;
+							textVisible = true;
+							
+							textVisible = true;
+							
+							text = "Game Over";
+	        		        textPaint.getTextBounds(text, 0, text.length(), textButton);
+	        		        textButton.left = (int) (screenWidth/2 - textPaint.measureText(text)/2);
+	        		        textButton.right = (int) (screenWidth/2 + textPaint.measureText(text)/2);
+	        		        textButton.bottom += screenHeight/2;
+	        		        textButton.top += screenHeight/2;
+						//}
 					}
 				}
 				

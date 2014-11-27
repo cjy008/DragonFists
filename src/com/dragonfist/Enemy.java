@@ -267,6 +267,14 @@ public class Enemy {
 		}
 	}
 	
+	/**
+	 * Checks if the enemy sprite is within a set a rectangular section of the screen
+	 * @param otherX1 Left edge boundary of other body
+	 * @param otherX2 Right edge boundary of other body
+	 * @param otherY1 Top edge boundary of other body
+	 * @param otherY2 Bottom edge boundary of other body
+	 * @return true if the enemy is well within the given boundaries (1/4 of the way already intersecting)
+	 */
 	public boolean isCollision(float otherX1, float otherX2, float otherY1, float otherY2)
 	{
 		float halfSpriteWidth = enemySprites[this.spriteIndex].getWidth()/4;
