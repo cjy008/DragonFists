@@ -23,6 +23,8 @@ public class Enemy {
 	//public static Sprite sprite;
 	private static Sprite enemySprites[];
 	
+	public boolean timeStop;
+	
 	public static final int ENEMY_LEFT = 0;
 	public static final int ENEMY_LEFT2 = 1;
 	public static final int ENEMY_UP = 2;
@@ -158,9 +160,16 @@ public class Enemy {
 	
 	public void update(float passedTime)
 	{
-		x += (float)(velx*passedTime);
-		vely += (EnemySpawner.gravity*passedTime);
-		y+= (float) (vely*passedTime);
+		if(timeStop)
+		{
+			timeStop = false;
+		}
+		else
+		{
+			x += (float)(velx*passedTime);
+			vely += (EnemySpawner.gravity*passedTime);
+			y+= (float) (vely*passedTime);
+		}
 		if(fading<255)
 		{
 			fading-=passedTime*300;
@@ -222,7 +231,11 @@ public class Enemy {
 														//However we already make health relative to initial velocity, which solves this problme.
 		
 		Log.d("Hit Method",String.format("Enemy health is now %f",health));
-		if(health<=0)
+		if(health>0)
+		{
+			timeStop = true;
+		}
+		else
 		{
 			if(alive)
 			{
@@ -324,20 +337,6 @@ public class Enemy {
 		return false;
 	}
 	
-//	public collision(Enemy enemy){
-//		double scalar1 = (Math.pow(this.velx, 2)+Math.pow(this.vely, 2));
-//		double scalar2 = (Math.pow(enemy.velx, 2)+Math.pow(enemy.vely, 2));
-//		double energy1 = 0.5*(scalar1);
-//		double energy2 = 0.5*(scalar2);
-//		double mom1x = this.velx;
-//		double mom1y = this.vely;
-//		double mom2x = enemy.velx;
-//		double mom2y = enemy.vely;
-////		energy1+energy2 = energyFinal = finalEn1+finalEn2;
-////		mom1x+mom2x = momXFinal = finalXVel1+finalXVel2;
-////		mom1y+mom2y = momYFinal = finalYVel1+finalYVel2;
-//	}
-	
 	public Vector2 getPosVector(){
 		return new Vector2(x,y);
 	}
@@ -350,9 +349,7 @@ public class Enemy {
 	public void collision(Enemy enemy)
 	{
 		Vector2 posVector = getPosVector();
-		Vector2 velVector = getVelVector();
 		Vector2 otherPosVector = enemy.getPosVector();
-		Vector2 otherVelVector = enemy.getVelVector();
 		
 	    Vector2 delta = (posVector.subtract(otherPosVector));
 	    double d = delta.length();
