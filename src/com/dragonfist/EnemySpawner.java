@@ -17,7 +17,7 @@ public class EnemySpawner {
 	final static public int bufferspace = 40;	//TODO Make bufferspace relative to screensize
 	static int screenWidth = GameView.screenWidth;
     static int screenHeight = GameView.screenHeight;
-	final static int gravity = screenHeight/5;
+	final static int gravity = screenHeight/10;
 	
 	public float timeCounter;		
 	public float spawnTime;		//Enemies spawn every (spawnTime) in-game seconds. 
@@ -26,7 +26,7 @@ public class EnemySpawner {
 	public EnemySpawner(GameView gameView){
 		this.gameView = gameView;
 		timeCounter = 0;
-		spawnTime = 0.5f;
+		spawnTime = .75f;
 		//Enemy.sprite = new Sprite(BitmapFactory.decodeResource(gameView.getResources(), R.drawable.enemy));
 	}
 	
