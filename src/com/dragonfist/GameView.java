@@ -325,10 +325,9 @@ public class GameView extends SurfaceView
     }
     
     private void updateStrength(float timePassed){
-    	if (isPaused == false){
-	    	if (player.strength <100){
+    	
+	    if (player.strength <100){
 	    		player.strength += (0.33*timePassed*(1000/33)); 
-	    	}
 	    }
     	remainingStrength = (screenWidth - screenWidth/25*2)* (player.strength)/100;
     	strengthBar.right = (int) (screenWidth/25 + remainingStrength);

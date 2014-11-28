@@ -250,7 +250,7 @@ public class Enemy {
 			}
 			else
 			{
-				if(health<-50)
+				if(health<-100)
 				{
 					if(fading==255)	//when this method is called, fading should always be zero - we call fading check jsut in case.
 					{

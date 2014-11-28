@@ -44,12 +44,14 @@ public class Game extends Activity {
 		} 
         catch (Exception e1) 
         { e1.printStackTrace(); }
+        gameView.pause(false);
     }
     
     @Override
     public void onStart() {
         super.onStart();
-        
+
+        gameView.pause(false);
         Scanner sc;
 		try {
 			sc = new Scanner(new File(getFilesDir(), GameView.saveFileName));
