@@ -22,7 +22,7 @@ public class Player
 	private Bitmap playerFrontStrike; // angle of attack from 225 to 135 degrees NoE
 	private Bitmap playerBackStrike; // angle of attack from 225 to 315 (-45) degrees NoE
 	
-	public static int reduceStrengthVariable = 1; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
+	public static float reduceStrengthVariable = 0.75f; // the larger the reduceStrengthVariable, the smaller the reduction in strength in each hit
 	public static final int maxStrength = 100;
 	public double strength; // 100 if it is full
 	public static int killCount;

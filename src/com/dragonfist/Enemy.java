@@ -101,7 +101,7 @@ public class Enemy {
 		this.vely = vely;
 		this.flipped = flipped;
 		alive = true;
-		health = Math.sqrt(Math.pow(velx,2)+Math.pow(vely,2));
+		health = GameView.screenHeight/5.5f;
 		initialized = true;
 		fading = 255;
 		//Log.d("Initialization Health",String.format("Initial health: %f", health));
@@ -241,8 +241,8 @@ public class Enemy {
 			{
 				alive=false;
 				health = 0;
-				velx /= 2;
-				vely /= 2;
+				velx /= 1.5f;
+				vely /= 1.5f;
 				velx += xFor/mass;
 				vely += yFor/mass;
 				Player.killCount += 1;
@@ -250,15 +250,15 @@ public class Enemy {
 			}
 			else
 			{
-				if(health<-100)
+				if(health<-50)
 				{
 					if(fading==255)	//when this method is called, fading should always be zero - we call fading check jsut in case.
 					{
 						fading=254;
 					}
 				}
-				velx /= 2;
-				vely /= 2;
+				velx /= 1.5f;
+				vely /= 1.5f;
 				velx += xFor/mass;
 				vely += yFor/mass;
 			}
@@ -369,7 +369,7 @@ public class Enemy {
 	    float dot = velocityDelta.dotProduct(normal);
 	    
 	    if (dot > 0) {
-	        float coefficient = 0.25f;	//This was originally .5f - in the given code
+	        float coefficient = 0.5f;	//This was originally .5f - in the given code
 	        float impulseStrength = (1 + coefficient) * dot;
 	        Vector2 impulse = new Vector2(normal);
 	        impulse.multiply(impulseStrength);

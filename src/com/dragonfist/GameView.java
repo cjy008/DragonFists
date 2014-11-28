@@ -41,6 +41,8 @@ public class GameView extends SurfaceView
     public static int highScore;
     public static final String saveFileName = "HighScore.txt";
     
+    public float hitEffectiveness = 1f;
+    
     public static float aspectSkewFactor;
     public int bufferspace = 40;
     
@@ -146,7 +148,7 @@ public class GameView extends SurfaceView
         currentX = 0;
         currentY = 0;
         linePaint = new Paint();
-        linePaint.setColor(Color.WHITE);
+        linePaint.setColor(Color.GREEN);
         linePaint.setStrokeWidth(6*(aspectSkewFactor));
         circleRadius = (int)(60*aspectSkewFactor);
         circlePaint = new Paint();
@@ -325,17 +327,21 @@ public class GameView extends SurfaceView
     private void updateStrength(float timePassed){
     	if (isPaused == false){
 	    	if (player.strength <100){
-	    		player.strength += (0.5*timePassed*(1000/33)); 
+	    		player.strength += (0.30*timePassed*(1000/33)); 
 	    	}
 	    }
     	remainingStrength = (screenWidth - screenWidth/25*2)* (player.strength)/100;
     	strengthBar.right = (int) (screenWidth/25 + remainingStrength);
     	
     	if (player.strength < 20){
-        strengthBarPaint.setARGB(200, 200, 100, 100);}
+        strengthBarPaint.setARGB(200, 200, 100, 100);
+        strengthBarPaint.setColor(Color.RED);
+        linePaint.setColor(Color.RED);}
     	
     	if (player.strength > 20){
-        strengthBarPaint.setARGB(255, 100, 200, 100);}
+        strengthBarPaint.setARGB(255, 100, 200, 100);
+        linePaint.setARGB(255, 100, 200, 100);
+        linePaint.setColor(Color.CYAN);}
     }
     
     /**
@@ -483,48 +489,20 @@ public class GameView extends SurfaceView
 		            // Only move if the ScaleGestureDetector isn't processing a gesture.
 		            float diffx = x-startX;
 		            float diffy = y-startY;
-		            Log.d("Testing X", String.format("%f",diffx));
-		            Log.d("Testing Y", String.format("%f",diffy));
 		            if((Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2))))/ GameView.screenWidth /Player.reduceStrengthVariable *100)>player.strength)
 		            {
-		            	//Log.d("Testing 1", String.format("%f",(Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2)))))));
-		            	//Log.d("Testing 1", String.format("%f",(Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2))))/ GameView.screenWidth /Player.reduceStrengthVariable *100)));		            	
-//		            	double allowedDist2 = (player.strength/100.0)*Player.reduceStrengthVariable*GameView.screenWidth;
-//		            	double allowedDist3 = player.strength/(100.0*Player.reduceStrengthVariable*GameView.screenWidth);
 		            	double allowedDist = (player.strength/(100.0*Player.reduceStrengthVariable))*GameView.screenWidth;
-		            	//Log.d("Testing 2", String.format("%f",allowedDist));
-		            	//Log.d("Testing 2-2", String.format("%f",allowedDist2));
-		            	//Log.d("Testing 2-3", String.format("%f",allowedDist3));
 		            	double radians = Math.atan(diffy/diffx);
 		            	if(diffx<0)
 		            	{
 		            		radians+=Math.PI;
 		            	}
-
-		            	Log.d("Testing Radians", String.format("%f",radians));
-
-		            	Log.d("Testing Sin Radians", String.format("%f",Math.sin(radians)));
-
-		            	Log.d("Testing Cos Radians", String.format("%f",Math.cos(radians)));
-		            	
+	            	
 		            	currentX = (float)(allowedDist*Math.cos(radians))+startX;
 	            		currentY = (float)(allowedDist*Math.sin(radians))+startY;
-		            	
-		            	/*if((radians>Math.PI/2&&radians<Math.PI)||((radians<0)&&(radians>MATH.PI/-2)))
-		            	{
-		            		currentX = (float)(allowedDist*Math.cos(radians));
-		            		currentY = (float)(allowedDist*Math.sin(radians));
-		            	}
-		            	else
-		            	{
-		            		currentX = (float)(allowedDist*Math.cos(radians));
-		            		currentY = (float)(allowedDist*Math.sin(radians));
-		            	}*/
-		            	
 		            }
 		            else
-		            {
-		            	
+		            {	            	
 			            currentX = x;
 			            currentY = y;
 		            }
@@ -569,8 +547,30 @@ public class GameView extends SurfaceView
 		        	punch=true;
 		            draggable = false;
 		            lineDrawn = false;
-		            currentX = x;
-		            currentY = y;
+		            
+		            //Begin strength calculation cde
+		            
+		            float diffx = x-startX;
+		            float diffy = y-startY;
+		            if((Math.sqrt((Math.pow(diffx,2)+(Math.pow(diffy,2))))/ GameView.screenWidth /Player.reduceStrengthVariable *100)>player.strength)
+		            {
+		            	double allowedDist = (player.strength/(100.0*Player.reduceStrengthVariable))*GameView.screenWidth;
+		            	double radians = Math.atan(diffy/diffx);
+		            	if(diffx<0)
+		            	{
+		            		radians+=Math.PI;
+		            	}
+	            	
+		            	currentX = (float)(allowedDist*Math.cos(radians))+startX;
+	            		currentY = (float)(allowedDist*Math.sin(radians))+startY;
+		            }
+		            else
+		            {	            	
+			            currentX = x;
+			            currentY = y;
+		            }
+		            
+		            //end strength calculation cde
 	        	}
 	            break;
 	        }
@@ -579,8 +579,6 @@ public class GameView extends SurfaceView
 	        {
 	        	lineDrawn = false;
 	            draggable = false;
-	            //currentX = x;
-	            //currentY = y;
 	            break;
 	        }
         }
@@ -592,21 +590,14 @@ public class GameView extends SurfaceView
      */
     private void restart() 
     {
-    	player.strength = player.maxStrength;
-    	player.killCount = 0;
+    	player = new Player(this);
     	text = "Start";
 		// TODO Auto-generated method stub
     	for(int i=0;i<numEnemies;i++)
         {
         	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
         	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
-        	enemies[i] = enemySpawner.initializeEnemy();
-        }
-    	for(int i=0;i<4;i++)
-        {
-        	//enemies[i] = new Enemy(this, (float)((screenWidth/10.0)*i), (float)((screenHeight/10.0)*i), 1.0, 1.0);
-        	//enemies[i] = new Enemy(this, (float)(i*40), (float)(i*40), 1.0, 1.0);
-        	enemies[i].initialized = false;
+        	enemies[i] = new Enemy();
         }
 	}
 	/**
@@ -699,7 +690,7 @@ public class GameView extends SurfaceView
 						}
 						if(punch)
 						{
-							player.hit(enemies[i],(currentX-startX),(currentY-startY));
+							player.hit(enemies[i],(currentX-startX)*hitEffectiveness,(currentY-startY)*hitEffectiveness);
 							punch=false;
 						}
 					}

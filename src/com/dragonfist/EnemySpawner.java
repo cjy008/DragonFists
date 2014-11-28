@@ -17,7 +17,7 @@ public class EnemySpawner {
 	final static public int bufferspace = 40;	//TODO Make bufferspace relative to screensize
 	static int screenWidth = GameView.screenWidth;
     static int screenHeight = GameView.screenHeight;
-	final static int gravity = screenHeight/10;
+	final static float gravity = screenHeight/12.5f;
 	
 	public float timeCounter;		
 	public float spawnTime;		//Enemies spawn every (spawnTime) in-game seconds. 
